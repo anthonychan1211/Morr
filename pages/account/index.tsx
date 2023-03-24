@@ -1,4 +1,4 @@
-import { StyledLogInPage, StyledAccountPage } from "./styles";
+import { StyledLogInPage, StyledAccountPage } from "../../lib/accountStyles";
 import { PT_Sans_Narrow } from "@next/font/google";
 import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabaseClient";

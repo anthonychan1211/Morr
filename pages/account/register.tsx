@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabaseClient";
-import { StyledRegisterForm } from "./styles";
+import { StyledRegisterForm } from "../../lib/accountStyles";
 import { PT_Sans_Narrow } from "@next/font/google";
 
 const ptSansNarrow = PT_Sans_Narrow({

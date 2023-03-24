@@ -1,6 +1,6 @@
 import { DocumentObject, SingleObject, StateBoolean } from "../../lib/types";
 
-import { StyledProductLandingPage } from "./styles";
+import { StyledProductLandingPage } from "../../lib/prodcutStyles";
 
 import { Montserrat } from "@next/font/google";
 

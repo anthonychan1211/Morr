@@ -10,7 +10,7 @@ import { prisma } from "@/prisma/db";
 import Image from "next/image";
 import { useState } from "react";
 
-import { StyledProductDetail } from "./styles";
+import { StyledProductDetail } from "../../lib/prodcutStyles";
 
 const Product = ({
   data,
