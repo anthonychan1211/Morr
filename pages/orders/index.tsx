@@ -1,5 +1,5 @@
 import React from "react";
-import { StyledOrderPage } from "./styles";
+import { StyledOrderPage } from "../../lib/orderStyles";
 
 const Order = () => {
   return (
