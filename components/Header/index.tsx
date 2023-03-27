@@ -4,13 +4,14 @@ import { StyledCart, StyledHeader } from "./styles";
 import Image from "next/image";
 import logo from "../../public/MorrLogo.png";
 import { Montserrat } from "@next/font/google";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CartItem, Product, UserData } from "@/lib/types";
 import {
   getBagProductData,
   getTotalAmount,
   setUserShoppingBag,
 } from "@/lib/functions";
+import { LoadingContext } from "@/lib/loadingState";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -28,7 +29,7 @@ const Header = ({
   const [showBag, setShowBag] = useState<boolean>(false);
   const [bagLength, setBagLength] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
-
+  const { setLoading } = useContext(LoadingContext);
   useEffect(() => {
     console.log("run setup header");
     console.log(shoppingBag);
@@ -46,6 +47,7 @@ const Header = ({
     } else {
       setUserShoppingBag(userData, setBagLength, setBag, setBagItems);
     }
+    setLoading(false);
   }, [shoppingBag, userData]);
   useEffect(() => {
     setTotalAmount(getTotalAmount(bagItems, bag));

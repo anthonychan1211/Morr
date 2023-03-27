@@ -58,9 +58,6 @@ const Product = ({
           onClick={() => {
             setLoading(true);
             handleAddProduct(userData, shoppingBag, data, setShoppingBag);
-            setTimeout(() => {
-              setLoading(false);
-            }, 0);
           }}
         >
           {(data.quantity as number) > 0
