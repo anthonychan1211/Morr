@@ -41,7 +41,7 @@ const All = ({
 
   useEffect(() => {
     const sorted = sortProducts(afterFilterProducts, sortMethod);
-    console.log(sorted);
+    
     setSortedProduct([...sorted]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

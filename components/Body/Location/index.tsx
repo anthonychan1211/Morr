@@ -18,7 +18,7 @@ const Location = () => {
     }
   }
 
-  if (routeElement.includes("Products")) {
+  if (routeElement.includes("Products") || routeElement.includes("Bag")) {
     return (
       <StyledLocation>
         <div className="route">

@@ -93,16 +93,20 @@ export const StyledProductDetail = styled.div`
   position: relative;
 
   grid-template-columns: 1fr 1fr;
+  @media screen and (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
   .gallery {
     gap: 10px;
-
     display: grid;
+    position: relative;
     grid-template-columns: 1fr 1fr;
-    .cover-container {
+    .cover_photo {
       grid-column-start: 1;
       grid-column-end: span 2;
-      position: relative;
-      height: 400px;
+      img {
+        object-fit: cover;
+      }
     }
     .photo {
       position: relative;
@@ -110,8 +114,16 @@ export const StyledProductDetail = styled.div`
       display: block;
     }
     img {
-      object-fit: cover;
       object-position: right;
+      object-fit: cover;
+    }
+    @media screen and (max-width: 1100px) {
+      display: flex;
+      flex-direction: column;
+      .cover-container {
+        width: 100%;
+        height: fit-content;
+      }
     }
   }
   .text {
@@ -120,6 +132,13 @@ export const StyledProductDetail = styled.div`
     position: sticky;
     top: 20px;
     height: fit-content;
+    @media screen and (max-width: 800px) {
+      position: static;
+      margin-top: 20px;
+    }
+    .name {
+      font-size: var(--large-text);
+    }
     .price {
       padding-top: 10px;
     }
@@ -129,9 +148,15 @@ export const StyledProductDetail = styled.div`
     margin-top: 50px;
     background-color: #515151;
     cursor: pointer;
-    :hover {
-      background-color: #5d5d5d;
+    :disabled {
+      background-color: #515151;
+      cursor: auto;
+      color: #787878;
     }
+  }
+  .add-to-cart:hover:not(:disabled) {
+    background-color: #6d6d6d;
+    outline: lightgrey solid 2px;
   }
 
   .detail-section {
@@ -146,7 +171,7 @@ export const StyledProductDetail = styled.div`
   }
   .detail {
     cursor: pointer;
-    font-size: 20px;
+    font-size: var(--medium-text);
   }
   .triangle {
     font-size: 20px;

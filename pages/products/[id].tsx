@@ -1,4 +1,5 @@
-import { addToUserBag, getUserBag } from "@/lib/functions";
+import { addToUserBag, getUserBag, handleAddProduct } from "@/lib/functions";
+import { LoadingContext } from "@/lib/loadingState";
 import {
   CartItem,
   Product,
@@ -8,7 +9,7 @@ import {
 } from "@/lib/types";
 import { prisma } from "@/prisma/db";
 import Image from "next/image";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { StyledProductDetail } from "../../lib/prodcutStyles";
 
@@ -23,73 +24,17 @@ const Product = ({
   shoppingBag: CartItem[];
   setShoppingBag: SetBag;
 }) => {
+  const { setLoading } = useContext(LoadingContext);
   const [showDetail, setShowDetail] = useState(false);
   const [showProductCare, setShowProductCare] = useState(false);
-  async function handleAddProduct() {
-    if (userData.id !== "") {
-      const productInBag = shoppingBag.filter(
-        (productInBag) => productInBag.product_id === data.id
-      );
-
-      const newItem: CartItem[] = productInBag.length
-        ? [
-            {
-              id: productInBag[0].id,
-              user_id: userData.id,
-              product_id: data.id,
-              quantity: productInBag[0].quantity + 1,
-            },
-          ]
-        : [
-            {
-              user_id: userData.id,
-              product_id: data.id,
-              quantity: 1,
-            },
-          ];
-      addToUserBag(newItem);
-      setTimeout(() => {
-        const newBag = getUserBag(userData.id);
-        newBag.then((res) => setShoppingBag(res));
-      }, 1000);
-    } else {
-      const currentCart =
-        JSON.parse(localStorage.getItem("bag") as string) || {};
-      localStorage.setItem(
-        "bag",
-        JSON.stringify({
-          ...currentCart,
-          [data.id]: currentCart[data.id] + 1 || 1,
-        })
-      );
-      const updateArr = shoppingBag.map((el) => {
-        if (el.product_id === data.id) {
-          el.quantity += 1;
-        }
-        return el;
-      });
-      setShoppingBag([...updateArr]);
-    }
-  }
+  const quantityInShoppingBag =
+    shoppingBag.filter((el) => el.product_id === data.id)[0]?.quantity || 0;
   return (
     <StyledProductDetail>
       <div className="gallery">
-        <div className="cover-container">
-          <Image
-            id="cover_photo"
-            src={data.cover_photo as string}
-            alt="cover_photo"
-            fill
-          />
-          <Image
-            className="animation_photo"
-            src={data.cover_photo as string}
-            alt="cover_photo"
-            width={400}
-            height={300}
-          />
+        <div className="photo cover_photo">
+          <Image src={data.cover_photo as string} alt="cover_photo" fill />
         </div>
-
         {data.gallery?.map((el, i) => {
           return (
             <div className="photo" key={i}>
@@ -99,10 +44,28 @@ const Product = ({
         })}
       </div>
       <div className="text">
-        <h1>{data.name}</h1>
+        <h1 className="name">{data.name}</h1>
         <h4 className="price">£{data.price / 100}</h4>
-        <button className="add-to-cart" onClick={handleAddProduct}>
-          ADD TO BAG
+        <button
+          className="add-to-cart"
+          disabled={
+            data.quantity === null ||
+            data.quantity === 0 ||
+            quantityInShoppingBag >= data.quantity
+              ? true
+              : false
+          }
+          onClick={() => {
+            setLoading(true);
+            handleAddProduct(userData, shoppingBag, data, setShoppingBag);
+            setTimeout(() => {
+              setLoading(false);
+            }, 0);
+          }}
+        >
+          {(data.quantity as number) > 0
+            ? "ADD TO SHOPPING BAG"
+            : "OUT OF STOCK"}
         </button>
 
         <div className={showDetail ? "detail-section open" : "detail-section"}>

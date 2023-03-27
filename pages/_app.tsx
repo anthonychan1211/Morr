@@ -14,6 +14,8 @@ import Location from "@/components/Body/Location";
 import Footer from "@/components/Footer";
 import { CartItem, UserDataType } from "@/lib/types";
 import { addToUserBag, getUserBag } from "@/lib/functions";
+import { LoadingProvider } from "@/lib/loadingState";
+import Loading from "@/components/Loading";
 const manrope = Manrope({
   subsets: ["latin"],
   weight: ["600"],
@@ -24,11 +26,12 @@ const GlobalStyles = createGlobalStyle`
     --small-text: max(14px, 1vw);
     --medium-text: max(18px, 1.15vw);
     --large-text: max(24px, 1.4vw);
+    --mega-text:max(36px, 2vw);
     --background-grey: #2e2e2e;
     --dark-gold: #e9d8c4;
   }
   html {
-    box-sizing: border-box;
+    
     padding: 0;
     box-sizing: border-box;
     background-color: var(--background-grey);
@@ -41,7 +44,7 @@ const GlobalStyles = createGlobalStyle`
 
   }
 
-  input[type='text'], input[type='password'], input[type='email'],input[type='number']{
+  input[type='text'], input[type='password'], input[type='email'],input[type='number'], textarea{
     padding: 14px;
     font-size: 16px;
     border: 1px solid #dddddd;
@@ -134,25 +137,28 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   }, [userData]);
 
   return (
-    <SessionContextProvider
-      supabaseClient={supabaseClient}
-      initialSession={pageProps.initialSession}
-    >
-      <main
-        style={{ display: "flex", flexDirection: "column", height: "100vh" }}
-        className={manrope.className}
+    <LoadingProvider>
+      <Loading />
+      <SessionContextProvider
+        supabaseClient={supabaseClient}
+        initialSession={pageProps.initialSession}
       >
-        <GlobalStyles />
-        <Header userData={userData} shoppingBag={shoppingBag} />
-        <Location />
-        <Component
-          {...pageProps}
-          userData={userData}
-          shoppingBag={shoppingBag}
-          setShoppingBag={setShoppingBag}
-        ></Component>
-        <Footer />
-      </main>
-    </SessionContextProvider>
+        <main
+          style={{ display: "flex", flexDirection: "column", height: "100vh" }}
+          className={manrope.className}
+        >
+          <GlobalStyles />
+          <Header userData={userData} shoppingBag={shoppingBag} />
+          <Location />
+          <Component
+            {...pageProps}
+            userData={userData}
+            shoppingBag={shoppingBag}
+            setShoppingBag={setShoppingBag}
+          ></Component>
+          <Footer />
+        </main>
+      </SessionContextProvider>
+    </LoadingProvider>
   );
 }

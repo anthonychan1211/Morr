@@ -5,7 +5,7 @@ import Image from "next/image";
 import logo from "../../public/MorrLogo.png";
 import { Montserrat } from "@next/font/google";
 import { useEffect, useState } from "react";
-import { CartItem, Product, SetStateBoolean, UserData } from "@/lib/types";
+import { CartItem, Product, UserData } from "@/lib/types";
 import {
   getBagProductData,
   getTotalAmount,
@@ -25,21 +25,24 @@ const Header = ({
 }) => {
   const [bagItems, setBagItems] = useState<Product[]>([]);
   const [bag, setBag] = useState<CartItem[]>([]);
-  const [showBag, setShowBag] = useState(false);
+  const [showBag, setShowBag] = useState<boolean>(false);
   const [bagLength, setBagLength] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
 
   useEffect(() => {
-    if (userData.id === "") {
+    console.log("run setup header");
+    console.log(shoppingBag);
+    if (userData.id === "" && shoppingBag.length > 0) {
       setBag(shoppingBag);
       setBagLength(
         shoppingBag.reduce((a, b) => {
           return a + b.quantity;
         }, 0)
       );
-      const itemsID = shoppingBag.map((el: CartItem) => el.product_id);
-      const bagProductData = getBagProductData(itemsID);
-      bagProductData.then((res) => setBagItems(res));
+      const bagProductData = getBagProductData(shoppingBag);
+      bagProductData.then((res) => {
+        setBagItems(res);
+      });
     } else {
       setUserShoppingBag(userData, setBagLength, setBag, setBagItems);
     }
@@ -52,6 +55,7 @@ const Header = ({
       ? (document.body.style.overflow = "hidden")
       : (document.body.style.overflow = "auto");
   }, [showBag]);
+
   return (
     <StyledHeader className={montserrat.className}>
       <div className="top-section">
@@ -96,48 +100,51 @@ const Header = ({
           CONTACT US
         </Link>
       </nav>
-      {showBag && (
-        <StyledCart>
-          <div className="inner-modal">
-            <div className="header">
-              <h1>Shopping Bag</h1>
-              <button className="close" onClick={() => setShowBag(false)}>
-                &#9587;
-              </button>
-            </div>
-            <div className="items">
-              {bagItems.map((el, i) => {
-                const productInfo = bag.filter(
-                  (bagItem) => bagItem.product_id === el.id
-                )[0];
 
-                return (
-                  <div key={i} className="single-item">
-                    <div className="photo">
-                      <Image src={el.cover_photo} alt="cover_photo" fill />
-                    </div>
-                    <div className="product_info">
-                      <p>{el.name}</p>
-                      <p className="quantity">
-                        Quantity: {productInfo.quantity}
-                      </p>
-                      <p className="price">
-                        £ {(productInfo.quantity * el.price) / 100}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="bottom">
-              <p>
-                TOTAL : <span className="price-number">£ {totalAmount}</span>
-              </p>
-              <button className="go-to-bag">View My Shopping Bag</button>
-            </div>
+      <StyledCart className={`bag ${showBag && "open"}`}>
+        <div className="inner-modal">
+          <div className="header">
+            <h1>Shopping Bag</h1>
+            <button className="close" onClick={() => setShowBag(false)}>
+              &#9587;
+            </button>
           </div>
-        </StyledCart>
-      )}
+          <div className="items">
+            {bagItems.map((el, i) => {
+              const productInfo = bag.filter(
+                (bagItem) => bagItem.product_id === el.id
+              )[0];
+
+              return (
+                <div key={i} className="single-item">
+                  <div className="photo">
+                    <Image src={el.cover_photo} alt="cover_photo" fill />
+                  </div>
+                  <div className="product_info">
+                    <p>{el.name}</p>
+                    <p className="quantity">
+                      Quantity: {productInfo?.quantity}
+                    </p>
+                    <p className="price">
+                      £ {(productInfo?.quantity * el.price) / 100}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="bottom">
+            <p>
+              TOTAL : <span className="price-number">£ {totalAmount}</span>
+            </p>
+            <button className="go-to-bag">
+              <Link href={"/bag"} onClick={() => setShowBag(false)}>
+                View My Shopping Bag
+              </Link>
+            </button>
+          </div>
+        </div>
+      </StyledCart>
     </StyledHeader>
   );
 };

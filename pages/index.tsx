@@ -1,6 +1,5 @@
-import Head from "next/head";
 import Image from "next/image";
-import { Inter, Montserrat } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import styled from "styled-components";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -21,6 +20,13 @@ const StyledHome = styled.div`
   h2 {
     color: lightgrey;
     line-height: 30px;
+  }
+  .banner {
+    width: 100%;
+    background-color: #ffffff;
+    font-size: var(--mega-text);
+    text-align: center;
+    padding: 20px;
   }
   .about-us-container {
     display: flex;
@@ -44,11 +50,16 @@ const StyledHome = styled.div`
     padding-bottom: 70px;
   }
   .pic-section {
+    position: relative;
     min-width: 50%;
     height: auto;
     background: url("/IMG_0932.jpg");
     background-position: left;
     background-size: cover;
+    img {
+      object-fit: cover;
+      object-position: left;
+    }
   }
   .category-container {
     display: flex;
@@ -84,6 +95,7 @@ export default function Home() {
   return (
     <StyledHome className={montserrat.className}>
       <div className="video"></div>
+      <div className="banner">Free Delivery in the UK</div>
       <div
         ref={domRef}
         className={`about-us-container ${isVisible ? "is-visible" : ""}`}
@@ -108,7 +120,9 @@ export default function Home() {
             their own individuality and creativity.
           </p>
         </div>
-        <div className="pic-section"></div>
+        <div className="pic-section">
+          <Image src="/IMG_0941.jpg" alt="about_photo" fill />
+        </div>
       </div>
       <div className="category-container">
         <Link href={"/products/earrings"} className="cell earrings">

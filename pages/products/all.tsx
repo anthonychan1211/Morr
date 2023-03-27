@@ -124,7 +124,7 @@ export async function getServerSideProps() {
   }
   try {
     const allProduct = await main();
-
+    console.log(allProduct);
     await prisma.$disconnect();
     return {
       props: { data: allProduct },

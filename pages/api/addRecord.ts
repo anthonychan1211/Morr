@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const form = JSON.parse(req.body);
-  console.log(form);
+
   try {
     if (form.id) {
       const updateProduct = prisma.products
@@ -19,7 +19,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         .then(async () => {
           await prisma.$disconnect();
         });
-      updateProduct.then((res) => console.log(res));
     } else {
       const newProduct = prisma.products
         .create({

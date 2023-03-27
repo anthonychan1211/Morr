@@ -83,16 +83,16 @@ const AddProduct = ({
           : form.material,
       quantity: parseInt(form.quantity as string) || null,
     };
-    console.log(typedForm);
+    
     const res = await fetch("/api/addRecord", {
       method: "POST",
       body: JSON.stringify(typedForm),
     });
     const feedBack = await res.json();
-    console.log(feedBack);
+    
     if (feedBack) window.location.reload();
   }
-  console.log(form);
+  
   return (
     <StyledAddProduct>
       <div className="inner-modal">

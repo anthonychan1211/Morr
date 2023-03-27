@@ -5,13 +5,13 @@ import {
   Product,
   SetBag,
   SetBagItem,
+  SetStateBoolean,
   SetStateDocumentObject,
   SetStateNumber,
   SetStateStringArray,
   SingleObject,
   UserData,
 } from "./types";
-
 /** get the options from products, however the filter section is fixed */
 export function filterSetUp(
   products: DocumentObject,
@@ -137,11 +137,16 @@ export async function addToUserBag(newItem: CartItem[]) {
   });
   return await res.json();
 }
+/**fetch function to get product details
+ * @param shoppingBag take in CartItem[]
+ * return Array<Product[]>
+ */
+export async function getBagProductData(shoppingBag: CartItem[]) {
+  const itemsID = shoppingBag.map((el: CartItem) => el.product_id);
 
-export async function getBagProductData(id: number[]) {
   const res = await fetch("/api/getBagProduct/", {
     method: "POST",
-    body: JSON.stringify({ product_id: id }),
+    body: JSON.stringify({ product_id: itemsID }),
   });
   const result = await res.json();
   return result.data;
@@ -173,8 +178,88 @@ export function setUserShoppingBag(
       }, 0)
     );
     setBag(items);
-    const itemsID = items.map((el: CartItem) => el.product_id);
-    const bagProductData = getBagProductData(itemsID);
+    const bagProductData = getBagProductData(items);
     bagProductData.then((res) => setBagItems(res));
   });
+}
+/**
+ * This onClick function updates the DB with upsert function and fetch back the new version and update the Shopping Bag and also when the shopping bag is updated, the length is updated as well.
+ * @param userData Use the userData.id to add product
+ * @param shoppingBag The variable that shows in the shopping bag component
+ * @param data Product data of the current page
+ * @param setShoppingBag SetState of Shopping Bag
+ */
+export async function handleAddProduct(
+  userData: UserData,
+  shoppingBag: CartItem[],
+  data: Product,
+  setShoppingBag: SetBag
+) {
+  if (userData.id !== "") {
+    const productInBag = shoppingBag.filter(
+      (productInBag) => productInBag.product_id === data.id
+    );
+
+    const newItem: CartItem[] = productInBag.length
+      ? [
+          {
+            id: productInBag[0].id,
+            user_id: userData.id,
+            product_id: data.id,
+            quantity: productInBag[0].quantity + 1,
+          },
+        ]
+      : [
+          {
+            user_id: userData.id,
+            product_id: data.id,
+            quantity: 1,
+          },
+        ];
+    const message = await addToUserBag(newItem);
+    if (message) {
+      const newBag = await getUserBag(userData.id);
+      setShoppingBag(newBag);
+    }
+  } else {
+    const currentCart = JSON.parse(localStorage.getItem("bag") as string) || {};
+    localStorage.setItem(
+      "bag",
+      JSON.stringify({
+        ...currentCart,
+        [data.id]: currentCart[data.id] + 1 || 1,
+      })
+    );
+    const updateArr = shoppingBag.map((el) => {
+      if (el.product_id === data.id) {
+        el.quantity += 1;
+      }
+      return el;
+    });
+    setShoppingBag([...updateArr]);
+  }
+}
+
+export async function handleQuantityChange(
+  change: string,
+  clickeditem: CartItem,
+  shoppingBag: CartItem[],
+  userData: UserData,
+  setShoppingBag: SetBag
+) {
+  let newShoppingBag = shoppingBag.map((item: CartItem) => {
+    if (item.product_id === clickeditem.product_id) {
+      if (change === "more") {
+        return { ...item, quantity: item.quantity + 1 };
+      } else if (change === "less") {
+        return { ...item, quantity: item.quantity - 1 };
+      }
+    }
+    return item;
+  });
+  const message = await addToUserBag(newShoppingBag);
+  if (message) {
+    const newBag = await getUserBag(userData.id);
+    setShoppingBag(newBag);
+  }
 }

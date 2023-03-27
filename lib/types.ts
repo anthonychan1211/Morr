@@ -40,6 +40,12 @@ export type CartItem = {
   product_id: number;
   quantity: number;
 };
+export type RemoveItem = {
+  id: number;
+  user_id: string;
+  product_id: number;
+  quantity: number;
+};
 export type SetBag = React.Dispatch<React.SetStateAction<CartItem[]>>;
 export type AddProductModal = number | string | null;
 export type SetStateString = React.Dispatch<React.SetStateAction<string>>;

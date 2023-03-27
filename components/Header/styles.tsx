@@ -143,6 +143,22 @@ export const StyledHeader = styled.div`
       }
     }
   }
+  .bag {
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    .inner-modal {
+      transform: translateX(100%);
+      transition: all 0.3s;
+    }
+  }
+  .bag.open {
+    opacity: 1;
+    pointer-events: all;
+    .inner-modal {
+      transform: translateX(0%);
+    }
+  }
 `;
 export const StyledCart = styled.div`
   height: 100%;
@@ -152,13 +168,14 @@ export const StyledCart = styled.div`
   top: 0;
   right: 0;
   z-index: 999;
+
   .inner-modal {
     display: flex;
     flex-direction: column;
     position: absolute;
     overflow: scroll;
     top: 0;
-    right: 0;
+    right: 0%;
     width: 35%;
     height: 100%;
     background-color: #262626;
@@ -230,6 +247,10 @@ export const StyledCart = styled.div`
           Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
         font-weight: 300;
         padding: 0px 20px;
+      }
+      a {
+        text-decoration: none;
+        color: lightgrey;
       }
     }
   }
