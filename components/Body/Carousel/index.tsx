@@ -176,7 +176,11 @@ const Carousel = ({ data }: { data: DocumentObject }) => {
               src={el["gallery"][randomPic] as string}
               alt={`photo_${i}`}
               fill
-              loading="eager"
+              loading={
+                i == curr || i == prev || i == prevPrev || i == nextNext
+                  ? "eager"
+                  : undefined
+              }
             />
           </div>
         );

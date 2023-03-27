@@ -31,8 +31,6 @@ const Header = ({
   const [totalAmount, setTotalAmount] = useState(0);
   const { setLoading } = useContext(LoadingContext);
   useEffect(() => {
-    console.log("run setup header");
-    console.log(shoppingBag);
     if (userData.id === "" && shoppingBag.length > 0) {
       setBag(shoppingBag);
       setBagLength(
@@ -139,11 +137,9 @@ const Header = ({
             <p>
               TOTAL : <span className="price-number">£ {totalAmount}</span>
             </p>
-            <button className="go-to-bag">
-              <Link href={"/bag"} onClick={() => setShowBag(false)}>
-                View My Shopping Bag
-              </Link>
-            </button>
+            <Link href={"/bag"} onClick={() => setShowBag(false)}>
+              <button className="go-to-bag">View My Shopping Bag</button>
+            </Link>
           </div>
         </div>
       </StyledCart>

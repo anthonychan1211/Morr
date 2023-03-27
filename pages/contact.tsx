@@ -12,6 +12,7 @@ const StyledContact = styled.div`
     font-size: var(--medium-text);
     padding: 40px;
     text-align: center;
+    color: #515151;
   }
   form {
     width: 90%;
@@ -19,6 +20,7 @@ const StyledContact = styled.div`
     label {
       margin-top: 20px;
       font-size: var(--small-text);
+      color: #515151;
     }
     textarea {
       width: 100%;

@@ -1,14 +1,14 @@
 import {
-  addToUserBag,
   getBagProductData,
   getUserBag,
   handleQuantityChange,
 } from "@/lib/functions";
 import { CartItem, Product, RemoveItem, SetBag, UserData } from "@/lib/types";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import Image from "next/image";
 import { Montserrat } from "@next/font/google";
+import { LoadingContext } from "@/lib/loadingState";
 const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["600"],
@@ -94,6 +94,7 @@ const Bag = ({
   setShoppingBag: SetBag;
 }) => {
   const [products, setProducts] = useState([]);
+  const { setLoading } = useContext(LoadingContext);
   useEffect(() => {
     async function getProductDetail() {
       const products = await getBagProductData(shoppingBag);
@@ -103,6 +104,7 @@ const Bag = ({
   }, [shoppingBag]);
 
   async function handleRemove(item: CartItem) {
+    setLoading(true);
     const removeItem = shoppingBag.filter(
       (product) => product.product_id === item.product_id
     )[0];
@@ -114,6 +116,7 @@ const Bag = ({
     if (feedBack) {
       const newBag = await getUserBag(userData.id);
       setShoppingBag(newBag);
+      setLoading(false);
     }
   }
   return (

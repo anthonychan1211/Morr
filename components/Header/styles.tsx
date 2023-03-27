@@ -238,6 +238,7 @@ export const StyledCart = styled.div`
       width: 100%;
       button {
         cursor: pointer;
+        width: 100%;
       }
       * {
         flex: 1;
@@ -251,6 +252,9 @@ export const StyledCart = styled.div`
       a {
         text-decoration: none;
         color: lightgrey;
+        width: 100%;
+        height: 100%;
+        flex: 1;
       }
     }
   }
