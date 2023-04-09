@@ -1,9 +1,8 @@
 import {
   AddProductModal,
   DocumentObject,
-  SetStateBoolean,
   SingleObject,
-  StateBoolean,
+  UserDataType,
 } from "../../lib/types";
 import Image from "next/image";
 import {
@@ -15,10 +14,10 @@ import SearchBar from "../../components/Body/SearchBar";
 import { Montserrat } from "@next/font/google";
 import FilterModal from "../../components/Body/FilterModal";
 import { useEffect, useState } from "react";
-import { PrismaClient } from "@prisma/client";
 import AddProduct from "@/components/Body/AddProduct";
 import { sortProducts } from "@/lib/functions";
 import { prisma } from "@/prisma/db";
+import Link from "next/link";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -30,7 +29,7 @@ const All = ({
   userData,
 }: {
   data: DocumentObject;
-  userData: SingleObject;
+  userData: UserDataType;
 }) => {
   const [filterModal, setFilterModal] = useState<boolean>(false);
   const [addProductModal, setAddProductModal] = useState<AddProductModal>(null);
@@ -42,7 +41,6 @@ const All = ({
 
   useEffect(() => {
     const sorted = sortProducts(afterFilterProducts, sortMethod);
-   
     setSortedProduct([...sorted]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,6 +50,9 @@ const All = ({
       ? (document.body.style.overflow = "hidden")
       : (document.body.style.overflow = "auto");
   }, [filterModal]);
+  async function handleEditProduct(e: any) {
+    setAddProductModal(e.target.dataset.id);
+  }
   return (
     <StyledProductPage className={montserrat.className}>
       <SearchBar
@@ -76,18 +77,27 @@ const All = ({
           return (
             <StyledProductCard key={i}>
               <div className="image-container">
-                <Image
-                  src={el["cover_photo"] as string}
-                  alt={`photo${i}`}
-                  fill
-                />
+                <Link href={`/products/${el.id}`}>
+                  <Image
+                    src={el["cover_photo"] as string}
+                    alt={`photo${i}`}
+                    fill
+                    data-id={el.id}
+                  />
+                </Link>
               </div>
               <div className="product-info">
                 <p className="product-name">{el.name}</p>
                 <p className="product-price">£{price}</p>
               </div>
               {userData.role === "admin" && (
-                <button className="edit-product">Edit Product</button>
+                <button
+                  className="edit-product"
+                  data-id={el.id}
+                  onClick={(e) => handleEditProduct(e)}
+                >
+                  Edit Product
+                </button>
               )}
             </StyledProductCard>
           );
@@ -103,11 +113,11 @@ const All = ({
         filterNumber={filterNumber}
         products={data}
       />
-      {addProductModal && (
+      {addProductModal !== null && (
         <AddProduct
           setAddProductModal={setAddProductModal}
           addProductModal={addProductModal}
-          products={afterFilterProducts}
+          products={data}
         />
       )}
     </StyledProductPage>

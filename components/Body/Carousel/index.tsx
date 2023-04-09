@@ -1,7 +1,9 @@
-import { DocumentObject } from "@/lib/types";
+import { DocumentObject, Product } from "@/lib/types";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import styled from "styled-components";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 const StyledCarousel = styled.div`
   position: relative;
@@ -9,12 +11,14 @@ const StyledCarousel = styled.div`
   height: max(280px, 33vw);
   margin: 0 auto;
   overflow: hidden;
+
   .container {
     width: 85%;
     min-height: 100%;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    pointer-events: none;
   }
   .slide {
     position: absolute;
@@ -97,13 +101,24 @@ const StyledCarousel = styled.div`
       transition: all 0.25s;
     }
   }
+
+  .link.current {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    cursor: pointer;
+    pointer-events: all;
+  }
 `;
-const Carousel = ({ data }: { data: DocumentObject }) => {
+const Carousel = ({ data }: { data: Product[] }) => {
   const [curr, setCurr] = useState(0);
   const [prev, setPrev] = useState(data.length - 1);
   const [prevPrev, setPrevPrev] = useState(data.length - 2);
   const [next, setNext] = useState(1);
   const [nextNext, setNextNext] = useState(2);
+  const router = useRouter();
   function handleSwitch(direction: string) {
     if (direction == "prev") {
       setCurr((prev) => (prev === 0 ? data.length - 1 : prev - 1));
@@ -122,7 +137,7 @@ const Carousel = ({ data }: { data: DocumentObject }) => {
   useEffect(() => {
     const timer = setInterval(() => {
       handleSwitch("next");
-    }, 5000);
+    }, 50000);
 
     return () => {
       clearInterval(timer);
@@ -137,9 +152,9 @@ const Carousel = ({ data }: { data: DocumentObject }) => {
       <button className="go-next" onClick={() => handleSwitch("next")}>
         &#8250;
       </button>
-      {data.map((el, i) => {
+      {data.map((el: Product, i) => {
         const randomPic = Math.floor(
-          Math.random() * (el["gallery"].length - 1)
+          Math.random() * ((el["gallery"] as string[]).length - 1)
         );
 
         return (
@@ -159,29 +174,34 @@ const Carousel = ({ data }: { data: DocumentObject }) => {
             }`}
             key={i}
           >
-            <Image
-              className={`slide ${
-                i == curr
-                  ? "current"
-                  : i == prev
-                  ? "prev"
-                  : i == next
-                  ? "next"
-                  : i == prevPrev
-                  ? "prev-prev"
-                  : i == nextNext
-                  ? "next-next"
-                  : ""
-              }`}
-              src={el["gallery"][randomPic] as string}
-              alt={`photo_${i}`}
-              fill
-              loading={
-                i == curr || i == prev || i == prevPrev || i == nextNext
-                  ? "eager"
-                  : undefined
-              }
-            />
+            <Link
+              href={`/products/${el.id}`}
+              className={`link ${i == curr ? "current" : ""}`}
+            >
+              <Image
+                className={`slide ${
+                  i == curr
+                    ? "current"
+                    : i == prev
+                    ? "prev"
+                    : i == next
+                    ? "next"
+                    : i == prevPrev
+                    ? "prev-prev"
+                    : i == nextNext
+                    ? "next-next"
+                    : ""
+                }`}
+                src={(el["gallery"] as string[])[randomPic] as string}
+                alt={`photo_${i}`}
+                fill
+                loading={
+                  i == curr || i == prev || i == prevPrev || i == nextNext
+                    ? "eager"
+                    : undefined
+                }
+              />
+            </Link>
           </div>
         );
       })}

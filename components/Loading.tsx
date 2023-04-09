@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import styled from "styled-components";
-import { LoadingContext } from "../lib/loadingState";
+import { Context } from "../lib/context";
 const StyledLoading = styled.div`
   position: fixed;
   width: 100vw;
@@ -27,7 +27,7 @@ const StyledLoading = styled.div`
   }
 `;
 const Loading: React.FC = () => {
-  const { loading } = useContext(LoadingContext);
+  const { loading } = useContext(Context);
 
   if (loading) {
     return (

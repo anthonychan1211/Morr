@@ -9,6 +9,8 @@ const ptSansNarrow = PT_Sans_Narrow({
   subsets: ["latin"],
 });
 export default function Register() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -40,10 +42,20 @@ export default function Register() {
     }
 
     const { data, error } = await supabase.auth.signUp({ email, password });
+
     if (error) {
       alert(error.message);
     } else {
-      console.log(data.user);
+      const res = await fetch("/api/registerName", {
+        method: "POST",
+        body: JSON.stringify({
+          id: data.user?.id,
+          firstName,
+          lastName,
+        }),
+      });
+      const result = await res.json();
+      console.log(result);
       alert(
         "Registration successful! Please check your email for confirmation."
       );
@@ -55,7 +67,26 @@ export default function Register() {
     <StyledRegisterForm>
       <form onSubmit={handleSubmit}>
         <h1 className={ptSansNarrow.className}>REGISTER</h1>
-
+        <div className="name-section">
+          <label>
+            *First Name
+            <input
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+          </label>
+          <label>
+            *Last Name
+            <input
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            />
+          </label>
+        </div>
         <label>
           *EMAIL
           <input

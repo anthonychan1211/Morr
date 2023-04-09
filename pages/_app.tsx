@@ -8,13 +8,13 @@ import { Manrope } from "@next/font/google";
 
 import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Location from "@/components/Body/Location";
 import Footer from "@/components/Footer";
 import { CartItem, UserDataType } from "@/lib/types";
 import { addToUserBag, getUserBag } from "@/lib/functions";
-import { LoadingProvider } from "@/lib/loadingState";
+import { Context, LoadingProvider } from "@/lib/context";
 import Loading from "@/components/Loading";
 const manrope = Manrope({
   subsets: ["latin"],
@@ -22,8 +22,8 @@ const manrope = Manrope({
 });
 const GlobalStyles = createGlobalStyle`
   :root{
-    --tiny-text: max(11px, 0.85vw);
-    --small-text: max(14px, 1vw);
+    --tiny-text: max(10px, 0.83vw);
+    --small-text: max(12px, 1vw);
     --medium-text: max(18px, 1.15vw);
     --large-text: max(24px, 1.4vw);
     --mega-text:max(36px, 2vw);
@@ -44,7 +44,7 @@ const GlobalStyles = createGlobalStyle`
 
   }
 
-  input[type='text'], input[type='password'], input[type='email'],input[type='number'], textarea{
+  input[type='text'], input[type='password'], input[type='email'],input[type='number'], textarea, select{
     padding: 14px;
     font-size: 16px;
     border: 1px solid #dddddd;
@@ -59,7 +59,7 @@ const GlobalStyles = createGlobalStyle`
     background-color: var(--background-grey);
     border: none;
     padding: 15px;
-    
+    cursor: pointer;
   }
   `;
 
@@ -68,26 +68,56 @@ Router.events.on("routeChangeComplete", () => NProgress.done());
 Router.events.on("routeChangeError", () => NProgress.done());
 export default function MyApp({ Component, pageProps }: AppProps) {
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
-  useEffect(() => {
-    async function getUser() {
-      const user = (await supabase.auth.getUser()).data.user;
-      if (user)
-        setUserData({ role: user.role as string, id: user.id as string });
-    }
-    getUser();
-  }, [supabaseClient]);
-
   const [userData, setUserData] = useState<UserDataType>({
     role: "",
     id: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    address_1: "",
+    address_2: "",
+    city: "",
+    country: "",
+    postal_code: "",
+    is_default_shipping_address: false,
   });
   const [shoppingBag, setShoppingBag] = useState<CartItem[]>([]);
+  useEffect(() => {
+    async function getUser() {
+      const user = (await supabase.auth.getUser()).data.user;
+      if (user) {
+        const res = await fetch("/api/getName", {
+          method: "POST",
+          body: JSON.stringify({
+            id: user.id,
+          }),
+        });
+        const result = await res.json();
+
+        setUserData({
+          role: user.role as string,
+          id: user.id as string,
+          first_name: result.first_name as string,
+          last_name: result.last_name as string,
+          email: user.email as string,
+          address_1: (result.address_1 as string) || "",
+          address_2: (result.address_2 as string) || "",
+          city: (result.city as string) || "",
+          country: (result.country as string) || "",
+          postal_code: (result.postal_code as string) || "",
+          is_default_shipping_address:
+            (result.is_default_shipping_address as boolean) || false,
+        });
+      }
+    }
+    getUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [supabaseClient]);
 
   useEffect(() => {
     async function setUpShoppingBag() {
       if (userData.id !== "") {
         const itemsInBag = await getUserBag(userData.id);
-
         const localBag = JSON.parse(localStorage.getItem("bag") as string);
         if (localBag !== null) {
           let mergedBag: CartItem[] = [];
@@ -135,7 +165,6 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     }
     setUpShoppingBag();
   }, [userData]);
-
   return (
     <LoadingProvider>
       <Loading />
@@ -144,7 +173,11 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         initialSession={pageProps.initialSession}
       >
         <main
-          style={{ display: "flex", flexDirection: "column", height: "100vh" }}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            minHeight: "100vh",
+          }}
           className={manrope.className}
         >
           <GlobalStyles />

@@ -2,18 +2,21 @@ import styled from "styled-components";
 import { SetStateBoolean, StateBoolean } from "../../../lib/types";
 
 const StyledMenuIcon = styled.div`
+  @media screen and (min-width: 1000px) {
+    display: none;
+  }
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
-  width: 30px;
+  width: 20px;
   height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: absolute;
-  right: 7vw;
+  left: 7vw;
   top: 60px;
   @media screen and (max-width: 700px) {
     top: 35px;
@@ -32,9 +35,9 @@ const StyledMenuIcon = styled.div`
 
       span {
         position: absolute;
-        background: #fff;
+        background: lightgrey;
         width: 100%;
-        height: 3px;
+        height: 2px;
         border-radius: 2px;
         display: block;
         top: 50%;

@@ -1,8 +1,9 @@
-import { type } from "os";
 import React from "react";
 
 export type DocumentObject = Array<{ [key: string]: string | string[] }>;
-export type SingleObject = { [key: string]: string | string[] | number };
+export type SingleObject = {
+  [key: string | number]: string | string[] | number;
+};
 export type Product = {
   id: number;
   name: string;
@@ -23,17 +24,26 @@ export type SetBagItem = React.Dispatch<React.SetStateAction<Product[]>>;
 export type UserDataType = {
   role: string;
   id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  address_1: string;
+  address_2: string;
+  city: string;
+  country: string;
+  postal_code: string;
+  is_default_shipping_address: boolean;
 };
+export type SetUserDataType = React.Dispatch<
+  React.SetStateAction<UserDataType>
+>;
 export type StateBoolean = React.SetStateAction<boolean>;
 export type SetStateBoolean = React.Dispatch<React.SetStateAction<boolean>>;
 export type SetStateNumber = React.Dispatch<React.SetStateAction<number>>;
 export type SetStateAddProductModal = React.Dispatch<
   React.SetStateAction<number | string | null>
 >;
-export type UserData = {
-  role: string;
-  id: string;
-};
+
 export type CartItem = {
   id?: number;
   user_id: string;

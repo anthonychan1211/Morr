@@ -5,13 +5,14 @@ import Image from "next/image";
 import logo from "../../public/MorrLogo.png";
 import { Montserrat } from "@next/font/google";
 import { useContext, useEffect, useState } from "react";
-import { CartItem, Product, UserData } from "@/lib/types";
+import { CartItem, UserDataType } from "@/lib/types";
 import {
   getBagProductData,
   getTotalAmount,
   setUserShoppingBag,
 } from "@/lib/functions";
-import { LoadingContext } from "@/lib/loadingState";
+import { Context } from "@/lib/context";
+import MenuIcon from "../Body/MenuIcon";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -21,15 +22,16 @@ const Header = ({
   userData,
   shoppingBag,
 }: {
-  userData: UserData;
+  userData: UserDataType;
   shoppingBag: CartItem[];
 }) => {
-  const [bagItems, setBagItems] = useState<Product[]>([]);
   const [bag, setBag] = useState<CartItem[]>([]);
   const [showBag, setShowBag] = useState<boolean>(false);
   const [bagLength, setBagLength] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
-  const { setLoading } = useContext(LoadingContext);
+  const [showMenu, setShowMenu] = useState(false);
+  const { setLoading, productData, setProductData } = useContext(Context);
+
   useEffect(() => {
     if (userData.id === "" && shoppingBag.length > 0) {
       setBag(shoppingBag);
@@ -40,27 +42,31 @@ const Header = ({
       );
       const bagProductData = getBagProductData(shoppingBag);
       bagProductData.then((res) => {
-        setBagItems(res);
+        setProductData(res);
       });
+      setLoading(false);
     } else {
-      setUserShoppingBag(userData, setBagLength, setBag, setBagItems);
+      setUserShoppingBag(userData, setBagLength, setBag, setProductData);
     }
     setLoading(false);
   }, [shoppingBag, userData]);
   useEffect(() => {
-    setTotalAmount(getTotalAmount(bagItems, bag));
-  }, [bagItems]);
+    if (bag.length > 0) {
+      setTotalAmount(getTotalAmount(productData, bag));
+    }
+  }, [bag, productData]);
   useEffect(() => {
     showBag
       ? (document.body.style.overflow = "hidden")
       : (document.body.style.overflow = "auto");
   }, [showBag]);
-
   return (
     <StyledHeader className={montserrat.className}>
       <div className="top-section">
         <Link href="/" className="logo-section">
-          <Image src={logo} alt="logo" className="logo" height={40} />
+          <div className="logo">
+            <Image src={logo} alt="logo" fill />
+          </div>
           <h4>COLLECTION</h4>
         </Link>
         <button className="user">
@@ -82,21 +88,37 @@ const Header = ({
           />
         </button>
       </div>
-      <nav className="nav-bar">
-        <Link href="/" className="header-tag">
+      <MenuIcon showMenu={showMenu} setShowMenu={setShowMenu} />
+      <nav className={`nav-bar ${showMenu ? "show" : ""}`}>
+        <Link
+          href="/"
+          className="header-tag"
+          onClick={() => setShowMenu(false)}
+        >
           HOME
         </Link>
-        <div className="product-tag">
-          <Link href="/products" className="header-tag">
-            PRODUCTS
-          </Link>
-        </div>
 
-        <Link href="/orders" className="header-tag">
+        <Link
+          href="/products"
+          className="header-tag"
+          onClick={() => setShowMenu(false)}
+        >
+          PRODUCTS
+        </Link>
+
+        <Link
+          href="/orders"
+          className="header-tag"
+          onClick={() => setShowMenu(false)}
+        >
           ORDERS
         </Link>
 
-        <Link href="/contact" className="header-tag">
+        <Link
+          href="/contact"
+          className="header-tag"
+          onClick={() => setShowMenu(false)}
+        >
           CONTACT US
         </Link>
       </nav>
@@ -110,13 +132,20 @@ const Header = ({
             </button>
           </div>
           <div className="items">
-            {bagItems.map((el, i) => {
+            {productData.map((el, i) => {
               const productInfo = bag.filter(
                 (bagItem) => bagItem.product_id === el.id
               )[0];
 
               return (
                 <div key={i} className="single-item">
+                  <Link
+                    href={`/products/${el.id}`}
+                    className="link"
+                    onClick={() => setShowBag(false)}
+                  >
+                    {" "}
+                  </Link>
                   <div className="photo">
                     <Image src={el.cover_photo} alt="cover_photo" fill />
                   </div>

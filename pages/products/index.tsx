@@ -1,4 +1,4 @@
-import { DocumentObject, SingleObject, StateBoolean } from "../../lib/types";
+import { Product, SingleObject } from "../../lib/types";
 
 import { StyledProductLandingPage } from "../../lib/prodcutStyles";
 
@@ -13,13 +13,7 @@ const montserrat = Montserrat({
   weight: ["600"],
 });
 
-const Products = ({
-  data,
-  userData,
-}: {
-  data: DocumentObject;
-  userData: SingleObject;
-}) => {
+const Products = ({ data }: { data: Product[] }) => {
   return (
     <StyledProductLandingPage className={montserrat.className}>
       <div className="section">

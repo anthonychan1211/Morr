@@ -8,6 +8,7 @@ const StyledFooter = styled.p`
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   font-weight: 100;
+  flex-shrink: 1;
 `;
 const Footer = () => {
   return <StyledFooter>&#169; Copyright owned by Anthony Chan</StyledFooter>;

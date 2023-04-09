@@ -4,7 +4,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const { product_id } = JSON.parse(req.body);
-  console.log(product_id);
   try {
     const itemsInBag = prisma.products.findMany({
       where: {

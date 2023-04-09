@@ -28,6 +28,10 @@ export const StyledProductCard = styled.div`
     box-shadow: 0 10px 15px #494949;
     position: relative;
     height: 300px;
+    overflow: hidden;
+    @media screen and (max-width: 1000px) {
+      height: 250px;
+    }
   }
   .product-info {
     margin: 20px 8px 10px 8px;
@@ -45,6 +49,10 @@ export const StyledProductCard = styled.div`
   }
   img {
     object-fit: cover;
+    :hover {
+      transform: scale(1.04);
+      transition: all 0.3s;
+    }
   }
 `;
 
@@ -65,17 +73,20 @@ export const StyledProductLandingPage = styled.div`
   .section {
     padding: 80px 0px 100px 0px;
     padding-bottom: 100px;
+    @media screen and (max-width: 1000px) {
+      padding: 5vw 0px;
+    }
   }
   .section-header {
     display: flex;
-    width: 85%;
+    width: 80%;
     margin: 0 auto;
     justify-content: space-between;
     align-items: baseline;
     margin-block: 20px;
   }
   h1 {
-    font-size: var(--large-text);
+    font-size: var(--medium-text);
     color: #928f83;
   }
   a {
@@ -91,7 +102,6 @@ export const StyledProductDetail = styled.div`
   padding: 40px;
   display: grid;
   position: relative;
-
   grid-template-columns: 1fr 1fr;
   @media screen and (max-width: 800px) {
     grid-template-columns: 1fr;
@@ -123,6 +133,9 @@ export const StyledProductDetail = styled.div`
       .cover-container {
         width: 100%;
         height: fit-content;
+      }
+      .photo {
+        height: 38vw;
       }
     }
   }
@@ -201,5 +214,14 @@ export const StyledProductDetail = styled.div`
   }
   .detail-section.open .description {
     transform: translateY(0%);
+  }
+  .policy {
+    background-color: #474747;
+    padding: 20px;
+    margin: 6vw 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    font-weight: 300;
+    font-size: var(--small-text);
   }
 `;

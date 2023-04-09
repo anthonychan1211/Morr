@@ -42,13 +42,12 @@ const Contact = () => {
 
   async function handleSubmit(e: { preventDefault: () => void }) {
     e.preventDefault();
-    console.log(formData);
     const res = await fetch("/api/sendEmail", {
       method: "POST",
       body: JSON.stringify(formData),
     });
     const feedBack = await res.json();
-    console.log(feedBack);
+    alert(feedBack.message);
   }
 
   const handleInputChange = (e: { target: { name: any; value: any } }) => {

@@ -1,3 +1,4 @@
+import { ChangeEvent, FormEvent } from "react";
 import {
   CartItem,
   DocumentObject,
@@ -9,8 +10,9 @@ import {
   SetStateDocumentObject,
   SetStateNumber,
   SetStateStringArray,
+  SetUserDataType,
   SingleObject,
-  UserData,
+  UserDataType,
 } from "./types";
 /** get the options from products, however the filter section is fixed */
 export function filterSetUp(
@@ -153,22 +155,25 @@ export async function getBagProductData(shoppingBag: CartItem[]) {
 }
 
 export function getTotalAmount(bagItem: Product[], bag: CartItem[]) {
-  return (
-    bagItem.reduce((accu: number, curr: Product) => {
-      return (
-        accu +
-        curr.price *
-          bag.filter((el: CartItem) => el.product_id === curr.id)[0].quantity
-      );
-    }, 0) / 100
-  );
+  if (bagItem.length > 0) {
+    return (
+      bagItem.reduce((accu: number, curr: Product) => {
+        return (
+          accu +
+          curr.price *
+            bag.filter((el: CartItem) => el.product_id === curr.id)[0]?.quantity
+        );
+      }, 0) / 100
+    );
+  }
+  return 0;
 }
 /**Set Up User Shopping Bag and length in Header*/
 export function setUserShoppingBag(
-  userData: UserData,
+  userData: UserDataType,
   setBagLength: SetStateNumber,
   setBag: SetBag,
-  setBagItems: SetBagItem
+  setBagItems: (productData: Product[]) => void
 ) {
   const result = getUserBag(userData.id as string);
   result.then((items) => {
@@ -190,10 +195,12 @@ export function setUserShoppingBag(
  * @param setShoppingBag SetState of Shopping Bag
  */
 export async function handleAddProduct(
-  userData: UserData,
+  userData: UserDataType,
   shoppingBag: CartItem[],
   data: Product,
-  setShoppingBag: SetBag
+  setShoppingBag: SetBag,
+  productData: Product[],
+  setProductData: (productData: Product[]) => void
 ) {
   if (userData.id !== "") {
     const productInBag = shoppingBag.filter(
@@ -222,21 +229,31 @@ export async function handleAddProduct(
       setShoppingBag(newBag);
     }
   } else {
-    const currentCart = JSON.parse(localStorage.getItem("bag") as string) || {};
+    const currentBag = JSON.parse(localStorage.getItem("bag") as string) || {};
+
     localStorage.setItem(
       "bag",
       JSON.stringify({
-        ...currentCart,
-        [data.id]: currentCart[data.id] + 1 || 1,
+        ...currentBag,
+        [data.id]: currentBag[data.id] + 1 || 1,
       })
     );
-    const updateArr = shoppingBag.map((el) => {
-      if (el.product_id === data.id) {
-        el.quantity += 1;
-      }
-      return el;
-    });
-    setShoppingBag([...updateArr]);
+
+    const newBag = JSON.parse(localStorage.getItem("bag") as string) || {};
+    const updateBag = [];
+    for (const item in newBag) {
+      updateBag.push({
+        user_id: "",
+        product_id: parseInt(item),
+        quantity: parseInt(newBag[item]),
+      });
+    }
+    setShoppingBag(updateBag);
+  }
+
+  if (productData.filter((el) => el.id === data.id).length === 0) {
+    console.log("run");
+    setProductData([...productData, data]);
   }
 }
 
@@ -244,7 +261,7 @@ export async function handleQuantityChange(
   change: string,
   clickeditem: CartItem,
   shoppingBag: CartItem[],
-  userData: UserData,
+  userData: UserDataType,
   setShoppingBag: SetBag
 ) {
   let newShoppingBag = shoppingBag.map((item: CartItem) => {
@@ -261,5 +278,36 @@ export async function handleQuantityChange(
   if (message) {
     const newBag = await getUserBag(userData.id);
     setShoppingBag(newBag);
+  }
+}
+
+export function handleUserInfoChange(
+  e: ChangeEvent<HTMLInputElement>,
+  setUserInfo: SetUserDataType,
+  userInfo: UserDataType
+) {
+  const { name, value, type, checked } = e.target;
+  setUserInfo({
+    ...userInfo,
+    [name]: type === "checkbox" ? checked : value,
+  });
+}
+
+export async function handleUpdateUser(
+  e: FormEvent<HTMLFormElement>,
+  userInfo: UserDataType,
+  setLoading: (prev: boolean) => void
+) {
+  e.preventDefault();
+  // setLoading(true);
+  const res = await fetch("/api/updateUserInfo", {
+    method: "POST",
+    body: JSON.stringify(userInfo),
+  });
+  const data = await res.json();
+  console.log(data);
+  if (data) {
+    alert("User Information has been updated!");
+    setLoading(false);
   }
 }

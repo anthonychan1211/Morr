@@ -1,4 +1,9 @@
-import { AddProductModal, DocumentObject, SingleObject } from "../../lib/types";
+import {
+  AddProductModal,
+  DocumentObject,
+  SingleObject,
+  UserDataType,
+} from "../../lib/types";
 import Image from "next/image";
 import {
   StyledProductPage,
@@ -24,7 +29,7 @@ const All = ({
   userData,
 }: {
   data: DocumentObject;
-  userData: SingleObject;
+  userData: UserDataType;
 }) => {
   const [filterModal, setFilterModal] = useState<boolean>(false);
   const [addProductModal, setAddProductModal] = useState<AddProductModal>(null);
@@ -124,7 +129,6 @@ export async function getServerSideProps() {
   }
   try {
     const allProduct = await main();
-    console.log(allProduct);
     await prisma.$disconnect();
     return {
       props: { data: allProduct },

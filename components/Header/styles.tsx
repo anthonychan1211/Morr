@@ -2,24 +2,24 @@ import styled from "styled-components";
 
 export const StyledHeader = styled.div`
   text-align: center;
-  padding-top: 40px;
+  padding-top: 2.5vw;
   width: 100%;
-  margin: 0px auto 0px auto;
+  margin: 0px auto;
   border-bottom: 2px solid #292929;
   .top-section {
-    position: relative;
-    margin-bottom: 50px;
+    margin-bottom: 10px;
+    height: 100px;
   }
   .user {
     position: absolute;
     right: 13vw;
-    top: 0;
+    top: 3vw;
     cursor: pointer;
   }
   .shopping-bag {
     position: absolute;
     right: 5vw;
-    top: 0;
+    top: 3vw;
     cursor: pointer;
   }
   .cart-length {
@@ -41,22 +41,36 @@ export const StyledHeader = styled.div`
   }
   .logo-section {
     text-decoration: none;
+    width: 20vw;
+    color: lightgrey;
+    font-size: max(14px, 1.2vw);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .logo {
+      display: block;
+      position: relative;
+      height: max(2vw, 50px);
+      width: max(10vw, 80px);
+      img {
+        object-fit: contain;
+      }
+    }
     h4 {
       padding-top: 7px;
       letter-spacing: 4px;
       color: var(--dark-gold);
-      font-size: max(7px, 0.7vw);
-    }
-    a {
-      text-decoration: none;
-      color: lightgrey;
-      font-size: max(14px, 1.2vw);
+      font-size: max(6px, 0.7vw);
     }
   }
   .nav-bar {
     padding-bottom: 15px;
     @media screen and (max-width: 1000px) {
-      display: none;
+      padding-bottom: 0px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s;
     }
     display: flex;
     justify-content: space-around;
@@ -73,6 +87,7 @@ export const StyledHeader = styled.div`
       display: inline-block;
       position: relative;
       z-index: 20;
+
       &::after {
         content: "";
         position: absolute;
@@ -89,59 +104,25 @@ export const StyledHeader = styled.div`
         transform: scaleX(1);
         transform-origin: bottom left;
       }
-    }
-    .product-tag {
-      position: relative;
-      &:hover .drop-down-menu {
-        transition: all 0.25s ease-in-out;
-        transform: translateY(0);
-      }
-      &:hover .menu-container {
-        height: fit-content;
+      @media screen and (max-width: 1000px) {
+        padding: 10px;
+        background-color: #181818;
+        width: 100%;
       }
     }
-    .menu-container {
-      height: 0;
+
+    @media screen and (max-width: 1000px) {
+      flex-direction: column;
+      border: 1px solid white;
       position: absolute;
-      left: max(-11px, -1vw);
-      overflow: hidden;
-      .drop-down-menu {
-        list-style: none;
-        text-align: left;
-        width: max(100px, 13vw);
-        padding: max(10px, 1vw);
-        transition: all 0.25s ease-in-out;
-        transform: translateY(-100%);
-        position: relative;
-        z-index: 10;
-        background-color: var(--background-grey);
-        li {
-          position: relative;
-          a {
-            display: block;
-            width: 100%;
-            font-size: max(13px, 1.15vw);
-          }
-          padding: 8px 0;
-          &::after {
-            content: "";
-            position: absolute;
-            width: 100%;
-            transform: scaleX(0);
-            height: 2px;
-            bottom: 8px;
-            left: 0;
-            background-color: lightgrey;
-            transform-origin: bottom right;
-            transition: transform 0.25s ease-out;
-          }
-          &:hover::after {
-            transform: scaleX(1);
-            transform-origin: bottom left;
-          }
-        }
-      }
+      top: 100px;
+      margin: 0;
     }
+  }
+  .nav-bar.show {
+    opacity: 1;
+    pointer-events: all;
+    transition: all 0.2s;
   }
   .bag {
     opacity: 0;
@@ -177,6 +158,18 @@ export const StyledCart = styled.div`
     top: 0;
     right: 0%;
     width: 35%;
+    @media screen and (max-width: 1250px) {
+      width: 40%;
+    }
+    @media screen and (max-width: 1000px) {
+      width: 50%;
+    }
+    @media screen and (max-width: 800px) {
+      width: 60%;
+    }
+    @media screen and (max-width: 680px) {
+      width: 100%;
+    }
     height: 100%;
     background-color: #262626;
     color: lightgrey;
@@ -204,12 +197,20 @@ export const StyledCart = styled.div`
       padding: 30px 0px;
     }
     .single-item {
+      position: relative;
       height: 180px;
       display: flex;
       width: 90%;
       margin: 0 auto;
       gap: 20px;
       line-height: 1.8rem;
+      pointer-events: none;
+      .link {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: all;
+      }
       .photo {
         position: relative;
         width: 35%;
@@ -239,15 +240,20 @@ export const StyledCart = styled.div`
       button {
         cursor: pointer;
         width: 100%;
+        font-size: var(--tiny-text);
       }
       * {
         flex: 1;
+      }
+      p {
+        font-size: var(--small-text);
       }
       span {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
         font-weight: 300;
-        padding: 0px 20px;
+        padding: 0px 2vw;
+        font-size: var(--small-text);
       }
       a {
         text-decoration: none;

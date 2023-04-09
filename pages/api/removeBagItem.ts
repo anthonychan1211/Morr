@@ -9,7 +9,6 @@ export default async function addToUserBag(
 ) {
   const { removeItem }: { removeItem: RemoveItem } = JSON.parse(req.body);
   try {
-    console.log(removeItem);
     const deleteItem = await prisma.cart.delete({
       where: {
         id: removeItem.id,

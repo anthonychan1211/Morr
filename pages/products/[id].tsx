@@ -1,15 +1,10 @@
-import { addToUserBag, getUserBag, handleAddProduct } from "@/lib/functions";
-import { LoadingContext } from "@/lib/loadingState";
-import {
-  CartItem,
-  Product,
-  SetBag,
-  SetStateBoolean,
-  UserData,
-} from "@/lib/types";
+import { handleAddProduct } from "@/lib/functions";
+import { Context } from "@/lib/context";
+import { CartItem, Product, SetBag, UserDataType } from "@/lib/types";
 import { prisma } from "@/prisma/db";
 import Image from "next/image";
-import { useContext, useEffect, useState } from "react";
+import Link from "next/link";
+import { useContext, useState } from "react";
 
 import { StyledProductDetail } from "../../lib/prodcutStyles";
 
@@ -20,11 +15,11 @@ const Product = ({
   setShoppingBag,
 }: {
   data: Product;
-  userData: UserData;
+  userData: UserDataType;
   shoppingBag: CartItem[];
   setShoppingBag: SetBag;
 }) => {
-  const { setLoading } = useContext(LoadingContext);
+  const { setLoading, productData, setProductData } = useContext(Context);
   const [showDetail, setShowDetail] = useState(false);
   const [showProductCare, setShowProductCare] = useState(false);
   const quantityInShoppingBag =
@@ -33,12 +28,16 @@ const Product = ({
     <StyledProductDetail>
       <div className="gallery">
         <div className="photo cover_photo">
-          <Image src={data.cover_photo as string} alt="cover_photo" fill />
+          <Link href={data.cover_photo} target="_blank">
+            <Image src={data.cover_photo as string} alt="cover_photo" fill />
+          </Link>
         </div>
         {data.gallery?.map((el, i) => {
           return (
             <div className="photo" key={i}>
-              <Image src={el} alt="cover_photo" fill />
+              <Link href={el} target="_blank">
+                <Image src={el} alt="cover_photo" fill />
+              </Link>
             </div>
           );
         })}
@@ -57,7 +56,14 @@ const Product = ({
           }
           onClick={() => {
             setLoading(true);
-            handleAddProduct(userData, shoppingBag, data, setShoppingBag);
+            handleAddProduct(
+              userData,
+              shoppingBag,
+              data,
+              setShoppingBag,
+              productData,
+              setProductData
+            );
           }}
         >
           {(data.quantity as number) > 0
@@ -90,6 +96,17 @@ const Product = ({
           <div className="description-container">
             <p className="description">{data.product_care}</p>
           </div>
+        </div>
+        <div className="policy">
+          <p>Free Standard Delivery in the UK</p>
+          <br />
+          <br />
+          <h4>Returns and Exchanges within 7 days</h4>
+          <br />
+          <p>
+            Buyer is responsible for return postage costs and any loss in value
+            if an item isn&apos;t returned in original condition.
+          </p>
         </div>
       </div>
     </StyledProductDetail>
