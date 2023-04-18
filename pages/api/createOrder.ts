@@ -48,7 +48,6 @@ export default async function handler(
           },
         ];
       }, []);
-      console.log(order);
       const orderItem = await prisma.order_items.createMany({
         data: items,
       });
