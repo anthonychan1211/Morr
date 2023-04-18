@@ -86,8 +86,15 @@ const StyledHome = styled.div`
     height: 350px;
     width: 100%;
     align-items: center;
-    /* border: 2px solid white; */
     text-align: center;
+    @media screen and (max-width: 1000px) {
+      flex-direction: column;
+      height: 80vw;
+      .cell {
+        height: 200px;
+        width: 100%;
+      }
+    }
     .cell {
       color: lightgrey;
       flex: 1;
@@ -114,10 +121,6 @@ const StyledHome = styled.div`
           transition: opacity 0.5s;
         }
       }
-    }
-    @media screen and (max-width: 1000px) {
-      flex-direction: column;
-      height: 80vw;
     }
   }
 `;

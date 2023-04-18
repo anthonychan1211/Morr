@@ -299,7 +299,7 @@ export async function handleUpdateUser(
   setLoading: (prev: boolean) => void
 ) {
   e.preventDefault();
-  // setLoading(true);
+  setLoading(true);
   const res = await fetch("/api/updateUserInfo", {
     method: "POST",
     body: JSON.stringify(userInfo),

@@ -32,6 +32,7 @@ export type UserDataType = {
   city: string;
   country: string;
   postal_code: string;
+  phone_num: string;
   is_default_shipping_address: boolean;
 };
 export type SetUserDataType = React.Dispatch<
@@ -69,3 +70,35 @@ export type SetStateDocumentObject = React.Dispatch<
 export interface FilterSelected {
   [key: string]: string[];
 }
+export type OrderType = {
+  id: number;
+  user_id: string | null;
+  delivery_first_name: string;
+  delivery_last_name: string;
+  delivery_phone_num: string;
+  delivery_address_1: string;
+  delivery_address_2: string | null;
+  delivery_city: string;
+  delivery_country: string;
+  delivery_postal_code: string;
+  billing_first_name: string;
+  billing_last_name: string;
+  billing_phone_num: string;
+  billing_address_1: string;
+  billing_address_2: string | null;
+  billing_city: string;
+  billing_country: string;
+  billing_postal_code: string;
+  amount: number;
+  create_at: string;
+  order_status: string;
+  delivery_email: string;
+  billing_email: string;
+};
+export type OrderItemType = {
+  id: number;
+  order_id: number;
+  product_id: number;
+  quantity: number;
+  product_price: number;
+};

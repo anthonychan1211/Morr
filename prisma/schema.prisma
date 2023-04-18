@@ -10,21 +10,22 @@ datasource db {
 }
 
 model products {
-  id                   Int      @id @default(autoincrement())
-  name                 String   @db.VarChar(255)
+  id                   Int           @id @default(autoincrement())
+  name                 String        @db.VarChar(255)
   price                Int
   discount             Boolean
   price_after_discount Int?
   description          String?
-  material             String[] @db.VarChar(255)
-  colour               String[] @db.VarChar(255)
+  material             String[]      @db.VarChar(255)
+  colour               String[]      @db.VarChar(255)
   cover_photo          String?
   gallery              String[]
   quantity             Int?
-  category             String?  @db.VarChar(255)
+  category             String?       @db.VarChar(255)
   product_care         String?
-  product_style        String?  @db.VarChar(255)
+  product_style        String?       @db.VarChar(255)
   cart                 cart[]
+  order_items          order_items[]
 
   @@schema("public")
 }
@@ -255,7 +256,7 @@ model cart {
   product_id Int
   user_id    String?  @db.Uuid
   products   products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  profiles   users?   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  profiles   users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@schema("public")
 }
@@ -270,6 +271,8 @@ model profiles {
   country                     String?  @db.VarChar(2)
   postal_code                 String?  @db.VarChar(255)
   is_default_shipping_address Boolean?
+  phone_num                   String?  @db.VarChar(255)
+  orders                      orders[]
   users                       users    @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@schema("public")
@@ -289,6 +292,48 @@ model flow_state {
 
   @@index([auth_code], map: "idx_auth_code")
   @@schema("auth")
+}
+
+model orders {
+  id                   Int           @id @default(autoincrement())
+  user_id              String?       @db.Uuid
+  delivery_first_name  String        @db.VarChar(255)
+  delivery_last_name   String        @db.VarChar(255)
+  delivery_phone_num   String        @db.VarChar(255)
+  delivery_address_1   String        @db.VarChar(255)
+  delivery_address_2   String        @db.VarChar(255)
+  delivery_city        String        @db.VarChar(255)
+  delivery_country     String        @db.VarChar(255)
+  delivery_postal_code String        @db.VarChar(255)
+  billing_first_name   String        @db.VarChar(255)
+  billing_last_name    String        @db.VarChar(255)
+  billing_phone_num    String        @db.VarChar(255)
+  billing_address_1    String        @db.VarChar(255)
+  billing_address_2    String        @db.VarChar(255)
+  billing_city         String        @db.VarChar(255)
+  billing_country      String        @db.VarChar(255)
+  billing_postal_code  String        @db.VarChar(255)
+  amount               Int
+  create_at            DateTime?     @default(now()) @db.Timestamptz(6)
+  order_status         order_status?
+  delivery_email       String
+  billing_email        String
+  order_items          order_items[]
+  profiles             profiles?     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+model order_items {
+  id            Int      @id @default(autoincrement())
+  order_id      Int?
+  product_id    Int
+  product_price Int
+  quantity      Int
+  orders        orders?  @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  products      products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("public")
 }
 
 enum aal_level {
@@ -318,4 +363,13 @@ enum code_challenge_method {
   plain
 
   @@schema("auth")
+}
+
+enum order_status {
+  received
+  dispatched
+  delivered
+  placed
+
+  @@schema("public")
 }

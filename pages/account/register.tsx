@@ -3,15 +3,30 @@ import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabaseClient";
 import { StyledRegisterForm } from "../../lib/accountStyles";
 import { PT_Sans_Narrow } from "@next/font/google";
-
+import CountrySelector from "@/components/Body/CountrySelector";
+import { UserDataType } from "@/lib/types";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/high-res.css";
 const ptSansNarrow = PT_Sans_Narrow({
   weight: ["700"],
   subsets: ["latin"],
 });
 export default function Register() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
+  const [userInfo, setUserInfo] = useState<UserDataType>({
+    role: "",
+    id: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    address_1: "",
+    address_2: "",
+    city: "",
+    country: "",
+    postal_code: "",
+    phone_num: "",
+    is_default_shipping_address: false,
+  });
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [lengthWarning, setLengthWarning] = useState(false);
@@ -41,7 +56,10 @@ export default function Register() {
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({
+      email: userInfo.email,
+      password,
+    });
 
     if (error) {
       alert(error.message);
@@ -50,8 +68,15 @@ export default function Register() {
         method: "POST",
         body: JSON.stringify({
           id: data.user?.id,
-          firstName,
-          lastName,
+          first_name: userInfo.first_name,
+          last_name: userInfo.last_name,
+          address_1: userInfo.address_1,
+          address_2: userInfo.address_2,
+          city: userInfo.city,
+          country: userInfo.country,
+          postal_code: userInfo.postal_code,
+          phone_num: userInfo.phone_num,
+          is_default_shipping_address: userInfo.is_default_shipping_address,
         }),
       });
       const result = await res.json();
@@ -72,8 +97,11 @@ export default function Register() {
             *First Name
             <input
               type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              value={userInfo.first_name}
+              name="first_name"
+              onChange={(e) =>
+                setUserInfo({ ...userInfo, [e.target.name]: e.target.value })
+              }
               required
             />
           </label>
@@ -81,8 +109,11 @@ export default function Register() {
             *Last Name
             <input
               type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              value={userInfo.last_name}
+              name="last_name"
+              onChange={(e) =>
+                setUserInfo({ ...userInfo, [e.target.name]: e.target.value })
+              }
               required
             />
           </label>
@@ -91,8 +122,11 @@ export default function Register() {
           *EMAIL
           <input
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={userInfo.email}
+            name="email"
+            onChange={(e) =>
+              setUserInfo({ ...userInfo, [e.target.name]: e.target.value })
+            }
             required
           />
         </label>
@@ -127,6 +161,107 @@ export default function Register() {
             Password doesn&apos;t match
           </p>
         </label>
+
+        <h1 className={ptSansNarrow.className}>
+          BILLING INFORMATION
+          <span
+            style={{
+              fontSize: "18px",
+              fontFamily:
+                "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif",
+              fontWeight: "200",
+            }}
+          >
+            (Optional)
+          </span>
+        </h1>
+
+        <label>
+          ADDRESS LINE 1
+          <input
+            type="text"
+            value={userInfo.address_1}
+            name="address_1"
+            onChange={(e) =>
+              setUserInfo({ ...userInfo, [e.target.name]: e.target.value })
+            }
+          />
+        </label>
+        <label>
+          ADDRESS LINE 2
+          <input
+            type="text"
+            value={userInfo.address_2}
+            name="address_2"
+            onChange={(e) =>
+              setUserInfo({ ...userInfo, [e.target.name]: e.target.value })
+            }
+          />
+        </label>
+        <label>
+          City
+          <input
+            type="text"
+            value={userInfo.city}
+            name="city"
+            onChange={(e) =>
+              setUserInfo({ ...userInfo, [e.target.name]: e.target.value })
+            }
+          />
+        </label>
+        <CountrySelector
+          edit={true}
+          userInfo={userInfo}
+          setUserInfo={setUserInfo}
+        />
+        <label>
+          Postal Code
+          <input
+            type="text"
+            value={userInfo.postal_code}
+            name="postal_code"
+            onChange={(e) =>
+              setUserInfo({ ...userInfo, [e.target.name]: e.target.value })
+            }
+          />
+        </label>
+
+        <label>
+          Phone Number
+          <PhoneInput
+            country={"gb"}
+            value={userInfo.phone_num}
+            inputStyle={{
+              fontSize: "16px",
+              height: "80%",
+              padding: "14px",
+              paddingLeft: "60px",
+              width: "100%",
+              borderColor: "#dddddd",
+            }}
+            onChange={(value) => setUserInfo({ ...userInfo, phone_num: value })}
+          />
+        </label>
+        <div className="default-address">
+          <input
+            type="checkbox"
+            name="is_default_shipping_address"
+            id="is_default_shipping_address"
+            checked={userInfo.is_default_shipping_address}
+            onChange={(e) =>
+              setUserInfo({
+                ...userInfo,
+                is_default_shipping_address: e.target.checked,
+              })
+            }
+          />
+          <label
+            htmlFor="is_default_shipping_address"
+            className="checkbox-label"
+          >
+            Default Shipping Address
+          </label>
+        </div>
         <button type="submit">Register</button>
       </form>
     </StyledRegisterForm>

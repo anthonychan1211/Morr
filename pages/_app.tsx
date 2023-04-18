@@ -44,7 +44,7 @@ const GlobalStyles = createGlobalStyle`
 
   }
 
-  input[type='text'], input[type='password'], input[type='email'],input[type='number'], textarea, select{
+  input[type='text'], input[type='password'], input[type='email'],input[type='number'], input[type='tel'], textarea, select{
     padding: 14px;
     font-size: 16px;
     border: 1px solid #dddddd;
@@ -79,6 +79,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     city: "",
     country: "",
     postal_code: "",
+    phone_num: "",
     is_default_shipping_address: false,
   });
   const [shoppingBag, setShoppingBag] = useState<CartItem[]>([]);
@@ -105,6 +106,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           city: (result.city as string) || "",
           country: (result.country as string) || "",
           postal_code: (result.postal_code as string) || "",
+          phone_num: (result.phone_num as string) || "",
           is_default_shipping_address:
             (result.is_default_shipping_address as boolean) || false,
         });

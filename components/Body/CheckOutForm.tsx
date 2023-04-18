@@ -6,11 +6,13 @@ import {
   AddressElement,
 } from "@stripe/react-stripe-js";
 import styled from "styled-components";
-import { UserDataType } from "@/lib/types";
+import { CartItem, Product, UserDataType } from "@/lib/types";
 import { handleUpdateUser, handleUserInfoChange } from "@/lib/functions";
 import CountrySelector from "./CountrySelector";
 import { Context } from "@/lib/context";
-
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/high-res.css";
+import { Router, useRouter } from "next/router";
 const StyledForm = styled.div`
   flex: 1;
   background-color: white;
@@ -31,7 +33,6 @@ const StyledForm = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    margin-top: 3vw;
   }
   .span2 {
     grid-column-start: 1;
@@ -41,6 +42,9 @@ const StyledForm = styled.div`
     display: flex;
     padding: 10px 0px 20px 0px;
     gap: 5px;
+  }
+  .title {
+    margin-block: 3vw;
   }
   .spinner {
     width: 25px;
@@ -56,14 +60,40 @@ const StyledForm = styled.div`
     }
   }
 `;
-export default function CheckoutForm({ userData }: { userData: UserDataType }) {
+export default function CheckoutForm({
+  userData,
+  amount,
+  shoppingBag,
+  productData,
+}: {
+  userData: UserDataType;
+  amount: number;
+  shoppingBag: CartItem[];
+  productData: Product[];
+}) {
   const stripe = useStripe();
   const elements = useElements();
   const { setLoading } = useContext(Context);
+  const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [tempUserInfo, setTempUserInfo] = useState<UserDataType>(userData);
-  const [isLoading, setIsLoading] = useState(false);
+  const [billingAddress, setBillingAddress] = useState<UserDataType>({
+    role: userData.role,
+    id: userData.id,
+    email: userData.email,
+    first_name: "",
+    last_name: "",
+    address_1: "",
+    address_2: "",
+    city: "",
+    country: "",
+    postal_code: "",
+    phone_num: "",
+    is_default_shipping_address: false,
+  });
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [showBillingAddress, setShowBillingAddress] = useState(false);
   useEffect(() => {
     if (!stripe) {
       return;
@@ -104,30 +134,45 @@ export default function CheckoutForm({ userData }: { userData: UserDataType }) {
     }
 
     setIsLoading(true);
-    if (
-      tempUserInfo.is_default_shipping_address &&
-      JSON.stringify(userData.is_default_shipping_address) !==
-        JSON.stringify(tempUserInfo.is_default_shipping_address)
-    ) {
-      handleUpdateUser(e, tempUserInfo, setLoading);
-    }
-    const { error } = await stripe.confirmPayment({
+
+    const { paymentIntent, error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: "http://localhost:3000",
+        return_url: `http://localhost:3000/bag`,
+        receipt_email: userData.email,
       },
+      redirect: "if_required",
     });
-
-    // This point will only be reached if there is an immediate error when
-    // confirming the payment. Otherwise, your customer will be redirected to
-    // your `return_url`. For some payment methods like iDEAL, your customer will
-    // be redirected to an intermediate site first to authorize the payment, then
-    // redirected to the `return_url`.
-    if (error.type === "card_error" || error.type === "validation_error") {
-      setMessage(error.message as string);
-    } else {
-      setMessage("An unexpected error occurred.");
+    if (paymentIntent?.status === "succeeded") {
+      const res = await fetch("/api/createOrder", {
+        method: "POST",
+        body: JSON.stringify({
+          amount,
+          deliveryInfo: tempUserInfo,
+          billingInfo: showBillingAddress ? billingAddress : tempUserInfo,
+          shoppingBag,
+          productData,
+        }),
+      });
+      const feedBack = await res.json();
+      if (feedBack.user_id === null) {
+        console.log(feedBack);
+        localStorage.removeItem("bag");
+      }
+      router
+        .push({
+          pathname: "/orderplaced",
+          query: { order_id: feedBack.id },
+        })
+        .then(() => router.reload());
+    }
+    if (error) {
+      if (error.type === "card_error" || error.type === "validation_error") {
+        setMessage(error.message as string);
+      } else {
+        setMessage("An unexpected error occurred.");
+      }
     }
 
     setIsLoading(false);
@@ -135,6 +180,7 @@ export default function CheckoutForm({ userData }: { userData: UserDataType }) {
   return (
     <StyledForm>
       <form id="payment-form" onSubmit={handleSubmit}>
+        <h3 className="title">Delivery Information</h3>
         <div className="inputs">
           <div className="input-field">
             <label htmlFor="first_name">First Name*</label>
@@ -142,10 +188,13 @@ export default function CheckoutForm({ userData }: { userData: UserDataType }) {
               type="text"
               name="first_name"
               className="firstName"
-              defaultValue={tempUserInfo.first_name}
+              value={tempUserInfo.first_name}
               required
               onChange={(e) =>
-                handleUserInfoChange(e, setTempUserInfo, tempUserInfo)
+                setTempUserInfo({
+                  ...tempUserInfo,
+                  [e.target.name]: e.target.value,
+                })
               }
             />
           </div>
@@ -153,11 +202,29 @@ export default function CheckoutForm({ userData }: { userData: UserDataType }) {
             <label htmlFor="last_name">Last Name*</label>
             <input
               type="text"
-              name="lastName"
-              defaultValue={tempUserInfo.last_name}
+              name="last_name"
+              value={tempUserInfo.last_name}
               required
               onChange={(e) =>
-                handleUserInfoChange(e, setTempUserInfo, tempUserInfo)
+                setTempUserInfo({
+                  ...tempUserInfo,
+                  [e.target.name]: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="input-field">
+            <label htmlFor="email">Email*</label>
+            <input
+              type="email"
+              name="email"
+              value={tempUserInfo.email}
+              required
+              onChange={(e) =>
+                setTempUserInfo({
+                  ...tempUserInfo,
+                  [e.target.name]: e.target.value,
+                })
               }
             />
           </div>
@@ -166,9 +233,13 @@ export default function CheckoutForm({ userData }: { userData: UserDataType }) {
             <input
               type="text"
               name="address_1"
+              value={tempUserInfo.address_1}
               required
               onChange={(e) =>
-                handleUserInfoChange(e, setTempUserInfo, tempUserInfo)
+                setTempUserInfo({
+                  ...tempUserInfo,
+                  [e.target.name]: e.target.value,
+                })
               }
             />
           </div>
@@ -178,26 +249,33 @@ export default function CheckoutForm({ userData }: { userData: UserDataType }) {
               type="text"
               name="address_2"
               onChange={(e) =>
-                handleUserInfoChange(e, setTempUserInfo, tempUserInfo)
+                setTempUserInfo({
+                  ...tempUserInfo,
+                  [e.target.name]: e.target.value,
+                })
               }
-              defaultValue={tempUserInfo.address_2}
+              value={tempUserInfo.address_2}
             />
           </div>
 
           <div className="input-field">
-            <label htmlFor="city">City</label>
+            <label htmlFor="city">City*</label>
             <input
               id="city"
               type="text"
               name="city"
-              defaultValue={tempUserInfo.city}
+              value={tempUserInfo.city}
               required
               onChange={(e) =>
-                handleUserInfoChange(e, setTempUserInfo, tempUserInfo)
+                setTempUserInfo({
+                  ...tempUserInfo,
+                  [e.target.name]: e.target.value,
+                })
               }
             />
           </div>
           <div className="input-field">
+            <label htmlFor="">Country*</label>
             <CountrySelector
               edit={true}
               setUserInfo={setTempUserInfo}
@@ -211,38 +289,185 @@ export default function CheckoutForm({ userData }: { userData: UserDataType }) {
               type="text"
               name="postal_code"
               id="postal_code"
-              defaultValue={tempUserInfo.postal_code}
+              value={tempUserInfo.postal_code}
               onChange={(e) =>
-                handleUserInfoChange(e, setTempUserInfo, tempUserInfo)
+                setTempUserInfo({
+                  ...tempUserInfo,
+                  [e.target.name]: e.target.value,
+                })
+              }
+            />
+          </div>
+          <div className="input-field">
+            <label htmlFor="postal_code">Phone Number*</label>
+            <PhoneInput
+              country={"gb"}
+              value={tempUserInfo.phone_num}
+              inputStyle={{
+                fontSize: "16px",
+                height: "80%",
+                padding: "14px",
+                paddingLeft: "60px",
+                width: "100%",
+                borderColor: "#dddddd",
+                borderRadius: "0",
+              }}
+              buttonStyle={{ borderRadius: "0" }}
+              onChange={(value) =>
+                setTempUserInfo({
+                  ...tempUserInfo,
+                  phone_num: value,
+                })
               }
             />
           </div>
         </div>
+
         <div className="default-address">
           <input
             type="checkbox"
-            name="is_default_shipping_address"
+            name="billing_address"
             id="is_default_shipping_address"
-            checked={tempUserInfo.is_default_shipping_address}
-            onClick={() =>
-              setTempUserInfo({
-                ...tempUserInfo,
-                is_default_shipping_address:
-                  !tempUserInfo.is_default_shipping_address,
-              })
-            }
+            checked={!showBillingAddress}
+            onClick={() => setShowBillingAddress(!showBillingAddress)}
           />
           <label htmlFor="is_default_shipping_address">
-            Default Shipping Address
+            Billing Information is same as delivery information
           </label>
         </div>
+
+        {showBillingAddress && (
+          <>
+            <h3 className="title">Billing Information</h3>
+            <div className="inputs">
+              <div className="input-field">
+                <label htmlFor="first_name">First Name*</label>
+                <input
+                  type="text"
+                  name="first_name"
+                  value={billingAddress.first_name}
+                  required
+                  onChange={(e) =>
+                    handleUserInfoChange(e, setBillingAddress, billingAddress)
+                  }
+                />
+              </div>
+              <div className="input-field">
+                <label htmlFor="last_name">Last Name*</label>
+                <input
+                  type="text"
+                  name="last_name"
+                  value={billingAddress.last_name}
+                  required
+                  onChange={(e) =>
+                    handleUserInfoChange(e, setBillingAddress, billingAddress)
+                  }
+                />
+              </div>
+              <div className="input-field">
+                <label htmlFor="address_1">Email*</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={tempUserInfo.email}
+                  required
+                  onChange={(e) =>
+                    setTempUserInfo({
+                      ...tempUserInfo,
+                      [e.target.name]: e.target.value,
+                    })
+                  }
+                />
+              </div>
+              <div className="input-field">
+                <label htmlFor="address_1">Address 1*</label>
+                <input
+                  type="text"
+                  name="address_1"
+                  value={billingAddress.address_1}
+                  required
+                  onChange={(e) =>
+                    handleUserInfoChange(e, setBillingAddress, billingAddress)
+                  }
+                />
+              </div>
+              <div className="input-field">
+                <label htmlFor="address_2">Address 2</label>
+                <input
+                  type="text"
+                  name="address_2"
+                  value={billingAddress.address_2}
+                  onChange={(e) =>
+                    handleUserInfoChange(e, setBillingAddress, billingAddress)
+                  }
+                />
+              </div>
+
+              <div className="input-field">
+                <label htmlFor="city">City*</label>
+                <input
+                  id="city"
+                  type="text"
+                  name="city"
+                  value={billingAddress.city}
+                  required
+                  onChange={(e) =>
+                    handleUserInfoChange(e, setBillingAddress, billingAddress)
+                  }
+                />
+              </div>
+              <div className="input-field">
+                <label htmlFor="">Country*</label>
+                <CountrySelector
+                  edit={true}
+                  setUserInfo={setBillingAddress}
+                  userInfo={billingAddress}
+                />
+              </div>
+
+              <div className="input-field">
+                <label htmlFor="postal_code">Postal Code*</label>
+                <input
+                  type="text"
+                  name="postal_code"
+                  id="postal_code"
+                  value={billingAddress.postal_code}
+                  onChange={(e) =>
+                    handleUserInfoChange(e, setBillingAddress, billingAddress)
+                  }
+                />
+              </div>
+              <div className="input-field">
+                <label htmlFor="postal_code">Phone Number*</label>
+                <PhoneInput
+                  country={"gb"}
+                  value={billingAddress.phone_num}
+                  inputStyle={{
+                    fontSize: "16px",
+                    height: "80%",
+                    padding: "14px",
+                    paddingLeft: "60px",
+                    width: "100%",
+                    borderColor: "#dddddd",
+                    borderRadius: "0",
+                  }}
+                  buttonStyle={{ borderRadius: "0" }}
+                  onChange={(value) =>
+                    setBillingAddress({ ...billingAddress, phone_num: value })
+                  }
+                />
+              </div>
+            </div>
+          </>
+        )}
+        <h3 className="title">Payment Information</h3>
         <PaymentElement />
         <button disabled={isLoading || !stripe || !elements} id="submit">
           <span id="button-text">
             {isLoading ? (
               <div className="spinner" id="spinner"></div>
             ) : (
-              "Pay now"
+              `Pay £ ${amount.toFixed(2)}`
             )}
           </span>
         </button>

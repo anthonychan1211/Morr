@@ -11,15 +11,15 @@ const StyledMenuIcon = styled.div`
     box-sizing: border-box;
   }
   width: 20px;
-  height: 30px;
+  height: 3vw;
   display: flex;
   align-items: center;
   justify-content: center;
   position: absolute;
   left: 7vw;
-  top: 60px;
+  top: 40px;
   @media screen and (max-width: 700px) {
-    top: 35px;
+    top: 30px;
   }
   .menu {
     width: 100%;

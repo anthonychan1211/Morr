@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContext, useState } from "react";
 
-import { StyledProductDetail } from "../../lib/prodcutStyles";
+import { StyledProductDetail } from "../../lib/productStyles";
 
 const Product = ({
   data,
@@ -44,7 +44,7 @@ const Product = ({
       </div>
       <div className="text">
         <h1 className="name">{data.name}</h1>
-        <h4 className="price">£{data.price / 100}</h4>
+        <h4 className="price">£{(data.price / 100).toFixed(2)}</h4>
         <button
           className="add-to-cart"
           disabled={

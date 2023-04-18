@@ -3,7 +3,6 @@ import { PT_Sans_Narrow } from "@next/font/google";
 import { supabase } from "@/lib/supabaseClient";
 import {
   ChangeEvent,
-  FormEvent,
   MouseEvent,
   useContext,
   useEffect,
@@ -14,6 +13,9 @@ import Link from "next/link";
 import CountrySelector from "@/components/Body/CountrySelector";
 import { Context } from "@/lib/context";
 import { handleUpdateUser, handleUserInfoChange } from "@/lib/functions";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/high-res.css";
+
 const ptSansNarrow = PT_Sans_Narrow({
   weight: ["700"],
   subsets: ["latin"],
@@ -145,6 +147,7 @@ const Account = ({ userData }: { userData: UserDataType }) => {
             />
           </div>
           <div className="input-field">
+            <label htmlFor="country">Country</label>
             <CountrySelector
               edit={edit}
               setUserInfo={setUserInfo}
@@ -161,6 +164,26 @@ const Account = ({ userData }: { userData: UserDataType }) => {
               disabled={!edit}
               defaultValue={userInfo.postal_code}
               onChange={(e) => handleUserInfoChange(e, setUserInfo, userInfo)}
+            />
+          </div>
+
+          <div className="input-field">
+            <label htmlFor="postal_code">Phone Number</label>
+            <PhoneInput
+              country={"us"}
+              disabled={!edit}
+              value={userInfo.phone_num}
+              inputStyle={{
+                fontSize: "16px",
+                height: "80%",
+                padding: "14px",
+                paddingLeft: "60px",
+                width: "100%",
+                borderColor: "#dddddd",
+              }}
+              onChange={(value) =>
+                setUserInfo({ ...userInfo, phone_num: value })
+              }
             />
           </div>
         </div>

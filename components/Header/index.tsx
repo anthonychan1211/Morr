@@ -155,7 +155,7 @@ const Header = ({
                       Quantity: {productInfo?.quantity}
                     </p>
                     <p className="price">
-                      £ {(productInfo?.quantity * el.price) / 100}
+                      £ {((productInfo?.quantity * el.price) / 100).toFixed(2)}
                     </p>
                   </div>
                 </div>
@@ -164,7 +164,8 @@ const Header = ({
           </div>
           <div className="bottom">
             <p>
-              TOTAL : <span className="price-number">£ {totalAmount}</span>
+              TOTAL :{" "}
+              <span className="price-number">£ {totalAmount.toFixed(2)}</span>
             </p>
             <Link href={"/bag"} onClick={() => setShowBag(false)}>
               <button className="go-to-bag">View My Shopping Bag</button>

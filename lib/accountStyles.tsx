@@ -45,7 +45,10 @@ export const StyledRegisterForm = styled.div`
   display: grid;
   justify-content: center;
   form {
-    width: 100%;
+    width: 60vw;
+    @media screen and (max-width: 700px) {
+      width: 90vw;
+    }
     .name-section {
       display: flex;
       * {
@@ -56,15 +59,11 @@ export const StyledRegisterForm = styled.div`
       margin-top: 50px;
       margin-bottom: 30px;
     }
-    input {
-      display: block;
-      width: max(30vw, 250px);
-    }
     label {
       margin-top: 25px;
     }
     button {
-      margin-top: 30px;
+      margin-block: 30px;
       cursor: pointer;
     }
     .warning {
@@ -77,13 +76,25 @@ export const StyledRegisterForm = styled.div`
       display: block;
       color: red;
     }
+    .default-address {
+      display: flex;
+      align-items: center;
+      margin: 10px 0px;
+      gap: 10px;
+      .checkbox-label {
+        margin: 0;
+      }
+    }
   }
 `;
 
 export const StyledAccountPage = styled.div`
   background-color: white;
   height: 100%;
-  padding: 0px 25%;
+  padding: 0px 20%;
+  @media screen and (max-width: 1000px) {
+    padding: 0px 5%;
+  }
   .welcome-section {
     margin: 0 auto;
     display: flex;
@@ -103,6 +114,9 @@ export const StyledAccountPage = styled.div`
     grid-template-columns: 1fr 1fr;
     gap: 10px;
     margin-top: 3vw;
+    @media screen and (max-width: 500px) {
+      grid-template-columns: 1fr;
+    }
   }
   .span2 {
     grid-column-start: 1;

@@ -46,7 +46,10 @@ const Location = () => {
         </div>
       </StyledLocation>
     );
-  } else if (routeElement.length === 1) {
+  } else if (
+    routeElement.length === 1 ||
+    routeElement.includes("Orderplaced")
+  ) {
     return <></>;
   } else {
     return (

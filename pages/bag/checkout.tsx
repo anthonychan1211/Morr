@@ -6,6 +6,7 @@ import CheckoutForm from "@/components/Body/CheckOutForm";
 import { CartItem, UserDataType } from "@/lib/types";
 import { Context } from "@/lib/context";
 import { getTotalAmount } from "@/lib/functions";
+import Product from "../products/[id]";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY as string);
 
@@ -30,7 +31,6 @@ export default function CheckOut({
         body: JSON.stringify({ amount }),
       });
       const feedBack = await res.json();
-      console.log(feedBack);
       setClientSecret(feedBack.clientSecret);
     }
     getClientSecret();
@@ -43,11 +43,25 @@ export default function CheckOut({
         <Elements
           options={{
             clientSecret,
-            appearance: { theme: "stripe" },
+            appearance: {
+              theme: "none",
+              rules: {
+                ".Input": {
+                  borderRadius: "0",
+                  boxShadow: "none",
+                  border: "1px solid #dddddd",
+                },
+              },
+            },
           }}
           stripe={stripePromise}
         >
-          <CheckoutForm userData={userData} />
+          <CheckoutForm
+            userData={userData}
+            amount={amount}
+            shoppingBag={shoppingBag}
+            productData={productData}
+          />
         </Elements>
       )}
     </>

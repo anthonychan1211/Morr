@@ -9,7 +9,7 @@ import {
   StyledProductPage,
   StyledProductContainer,
   StyledProductCard,
-} from "../../lib/prodcutStyles";
+} from "../../lib/productStyles";
 import SearchBar from "../../components/Body/SearchBar";
 import { Montserrat } from "@next/font/google";
 import FilterModal from "../../components/Body/FilterModal";

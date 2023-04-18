@@ -1,6 +1,6 @@
 import { Product, SingleObject } from "../../lib/types";
 
-import { StyledProductLandingPage } from "../../lib/prodcutStyles";
+import { StyledProductLandingPage } from "../../lib/productStyles";
 
 import { Montserrat } from "@next/font/google";
 

@@ -8,11 +8,14 @@ export const StyledHeader = styled.div`
   border-bottom: 2px solid #292929;
   .top-section {
     margin-bottom: 10px;
-    height: 100px;
+    height: 80px;
+    @media screen and (max-width: 700px) {
+      height: 60px;
+    }
   }
   .user {
     position: absolute;
-    right: 13vw;
+    right: 15vw;
     top: 3vw;
     cursor: pointer;
   }
@@ -41,7 +44,7 @@ export const StyledHeader = styled.div`
   }
   .logo-section {
     text-decoration: none;
-    width: 20vw;
+    width: 18vw;
     color: lightgrey;
     font-size: max(14px, 1.2vw);
     margin: 0 auto;
@@ -51,8 +54,8 @@ export const StyledHeader = styled.div`
     .logo {
       display: block;
       position: relative;
-      height: max(2vw, 50px);
-      width: max(10vw, 80px);
+      height: max(1.8vw, 40px);
+      width: max(8vw, 70px);
       img {
         object-fit: contain;
       }
@@ -117,6 +120,7 @@ export const StyledHeader = styled.div`
       position: absolute;
       top: 100px;
       margin: 0;
+      z-index: 999;
     }
   }
   .nav-bar.show {

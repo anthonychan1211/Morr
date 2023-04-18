@@ -11,7 +11,6 @@ import { Montserrat } from "@next/font/google";
 import { Context } from "@/lib/context";
 import Link from "next/link";
 import { StyledBagPage } from "@/lib/bagStyles";
-import { useRouter } from "next/router";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -30,7 +29,6 @@ const Bag = ({
   const [products, setProducts] = useState([]);
   const [total, setTotal] = useState(0);
   const { setLoading, productData } = useContext(Context);
-  console.log(productData);
   useEffect(() => {
     async function getProductDetail() {
       const products = await getBagProductData(shoppingBag);
@@ -98,7 +96,7 @@ const Bag = ({
                     </p>
                   </Link>
                   <p className="amount">
-                    £ {(product.price * bagItem?.quantity) / 100}
+                    £ {((product.price * bagItem?.quantity) / 100).toFixed(2)}
                   </p>
                 </div>
                 <div className="quantity">
@@ -149,7 +147,7 @@ const Bag = ({
       </div>
       <div className="check-out">
         <h2 className={`total ${montserrat.className}`}>
-          TOTAL : <span>£ {total}</span>
+          TOTAL : <span>£ {total.toFixed(2)}</span>
         </h2>
 
         <Link href={"/bag/checkout"} className={`link ${montserrat.className}`}>
