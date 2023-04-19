@@ -28,7 +28,7 @@ const Bag = ({
 }) => {
   const [products, setProducts] = useState([]);
   const [total, setTotal] = useState(0);
-  const { setLoading, productData } = useContext(Context);
+  const { setLoading } = useContext(Context);
   useEffect(() => {
     async function getProductDetail() {
       const products = await getBagProductData(shoppingBag);

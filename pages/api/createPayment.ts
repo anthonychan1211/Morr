@@ -9,7 +9,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const amount = JSON.parse(req.body.amount);
-
+  console.log(process.env.SECRET_STRIPE_KEY);
   // Create a PaymentIntent with the order amount and currency
   try {
     const paymentIntent = await stripe.paymentIntents.create({

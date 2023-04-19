@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyledOrderPage } from "../lib/orderStyles";
+import { OrderType, UserDataType } from "@/lib/types";
+import { prisma } from "@/prisma/db";
 
-const Order = () => {
+const Order = ({ userData }: { userData: UserDataType }) => {
+  const [orders, setOrders] = useState<OrderType[]>([]);
+ 
   return (
     <StyledOrderPage>
       <div className="current-order">

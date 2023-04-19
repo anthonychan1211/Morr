@@ -24,7 +24,7 @@ export default function Register() {
     country: "",
     postal_code: "",
     phone_num: "",
-    is_default_shipping_address: false,
+    is_default_shipping_address: true,
   });
 
   const [password, setPassword] = useState("");
