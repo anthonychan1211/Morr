@@ -31,6 +31,7 @@ const Account = ({ userData }: { userData: UserDataType }) => {
   useEffect(() => {
     setLoading(true);
     if (userData.id) {
+      setLoggedIn(true);
       setUserInfo(userData);
     }
     setLoading(false);
@@ -77,7 +78,7 @@ const Account = ({ userData }: { userData: UserDataType }) => {
       }
     }
   }
-
+  console.log(userData);
   return loggedIn ? (
     <StyledAccountPage>
       <div className="welcome-section">
