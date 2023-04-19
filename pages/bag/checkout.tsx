@@ -6,7 +6,6 @@ import CheckoutForm from "@/components/Body/CheckOutForm";
 import { CartItem, UserDataType } from "@/lib/types";
 import { Context } from "@/lib/context";
 import { getTotalAmount } from "@/lib/functions";
-import Product from "../products/[id]";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY as string);
 
@@ -36,7 +35,6 @@ export default function CheckOut({
     getClientSecret();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log(clientSecret);
   return (
     <>
       {clientSecret && (

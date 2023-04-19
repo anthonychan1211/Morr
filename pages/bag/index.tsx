@@ -31,9 +31,11 @@ const Bag = ({
   const { setLoading } = useContext(Context);
   useEffect(() => {
     async function getProductDetail() {
+      setLoading(true);
       const products = await getBagProductData(shoppingBag);
       setProducts(products);
       setTotal(getTotalAmount(products, shoppingBag));
+      setLoading(false);
     }
     getProductDetail();
   }, [shoppingBag]);
