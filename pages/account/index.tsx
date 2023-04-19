@@ -27,11 +27,13 @@ const Account = ({ userData }: { userData: UserDataType }) => {
   const [resetPasswordEmail, setResetPasswordEmail] = useState("");
   const [edit, setEdit] = useState(false);
   const { setLoading } = useContext(Context);
+
   useEffect(() => {
+    setLoading(true);
     if (userData.id) {
-      setLoggedIn(true);
       setUserInfo(userData);
     }
+    setLoading(false);
   }, [userData]);
   const [credential, setCredential] = useState({
     email: "",
