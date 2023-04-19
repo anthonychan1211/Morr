@@ -38,7 +38,7 @@ export default function CheckOut({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <>
+    <div style={{ flex: "1", backgroundColor: "white" }}>
       {clientSecret && (
         <Elements
           options={{
@@ -64,6 +64,6 @@ export default function CheckOut({
           />
         </Elements>
       )}
-    </>
+    </div>
   );
 }
