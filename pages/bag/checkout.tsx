@@ -16,10 +16,11 @@ export default function CheckOut({
   shoppingBag: CartItem[];
   userData: UserDataType;
 }) {
-  const { productData } = useContext(Context);
+  const { productData, setLoading } = useContext(Context);
   const [clientSecret, setClientSecret] = useState<string>("");
   let amount = getTotalAmount(productData, shoppingBag);
   useEffect(() => {
+    setLoading(true);
     // Create PaymentIntent as soon as the page loads
     async function getClientSecret() {
       const res = await fetch("/api/createPayment", {
@@ -33,6 +34,7 @@ export default function CheckOut({
       setClientSecret(feedBack.clientSecret);
     }
     getClientSecret();
+    setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

@@ -67,6 +67,7 @@ Router.events.on("routeChangeStart", () => NProgress.start());
 Router.events.on("routeChangeComplete", () => NProgress.done());
 Router.events.on("routeChangeError", () => NProgress.done());
 export default function MyApp({ Component, pageProps }: AppProps) {
+  const { setLoading } = useContext(Context);
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
   const [userData, setUserData] = useState<UserDataType>({
     role: "",
@@ -85,6 +86,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   const [shoppingBag, setShoppingBag] = useState<CartItem[]>([]);
   useEffect(() => {
     async function getUser() {
+      setLoading(true);
       const user = (await supabase.auth.getUser()).data.user;
       if (user) {
         const res = await fetch("/api/getName", {
@@ -114,6 +116,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     }
     getUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    setLoading(false);
   }, [supabaseClient]);
 
   useEffect(() => {
