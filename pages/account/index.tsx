@@ -56,6 +56,7 @@ const Account = ({ userData }: { userData: UserDataType }) => {
   });
   async function handleLogIn(e: { preventDefault: () => void }) {
     e.preventDefault();
+    setLoading(true);
     setLogInWarning(false);
     const { data, error } = await supabase.auth.signInWithPassword(credential);
     if (data.user) {
