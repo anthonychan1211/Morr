@@ -16,6 +16,8 @@ import { CartItem, UserDataType } from "@/lib/types";
 import { addToUserBag, getUserBag } from "@/lib/functions";
 import { Context, LoadingProvider } from "@/lib/context";
 import Loading from "@/components/Loading";
+import Head from "next/head";
+
 const manrope = Manrope({
   subsets: ["latin"],
   weight: ["600"],
@@ -115,8 +117,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       }
     }
     getUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabaseClient]);
 
   useEffect(() => {
@@ -177,6 +179,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         supabaseClient={supabaseClient}
         initialSession={pageProps.initialSession}
       >
+        <Head>
+          <title>Morr</title>
+        </Head>
         <main
           style={{
             display: "flex",

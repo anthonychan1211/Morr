@@ -94,6 +94,7 @@ export type OrderType = {
   order_status: string;
   delivery_email: string;
   billing_email: string;
+  tracking_number?: string;
 };
 export type OrderItemType = {
   id: number;

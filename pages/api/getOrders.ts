@@ -14,6 +14,18 @@ export default async function handler(
         user_id,
       },
     });
+
+    const items = await prisma.order_items.findMany({
+      where: {
+        order_id: { in: orders.map((el) => el.id) },
+      },
+    });
+    const productsInfo = await prisma.products.findMany({
+      where: {
+        id: { in: items.map((el) => el.product_id) },
+      },
+    });
+    res.json({ orders, items, productsInfo });
   } catch (e) {
     console.error(e);
     prisma.$disconnect();

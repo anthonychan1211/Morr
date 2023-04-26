@@ -12,7 +12,7 @@ import CountrySelector from "./CountrySelector";
 import { Context } from "@/lib/context";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/high-res.css";
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
 const StyledForm = styled.div`
   flex: 1;
   background-color: white;
@@ -73,7 +73,6 @@ export default function CheckoutForm({
 }) {
   const stripe = useStripe();
   const elements = useElements();
-  const { setLoading } = useContext(Context);
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [tempUserInfo, setTempUserInfo] = useState<UserDataType>(userData);
@@ -134,48 +133,69 @@ export default function CheckoutForm({
     }
 
     setIsLoading(true);
-
-    const { paymentIntent, error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        // Make sure to change this to your payment completion page
-        return_url: `http://localhost:3000/bag`,
-        receipt_email: userData.email,
-      },
-      redirect: "if_required",
+    const res = await fetch("/api/checkProductQuantity", {
+      method: "POST",
+      body: JSON.stringify({
+        products: shoppingBag,
+      }),
     });
-    if (paymentIntent?.status === "succeeded") {
-      const res = await fetch("/api/createOrder", {
-        method: "POST",
-        body: JSON.stringify({
-          amount,
-          deliveryInfo: tempUserInfo,
-          billingInfo: showBillingAddress ? billingAddress : tempUserInfo,
-          shoppingBag,
-          productData,
-        }),
-      });
-      const feedBack = await res.json();
-      if (feedBack.user_id === null) {
-        console.log(feedBack);
-        localStorage.removeItem("bag");
-      }
-      router
-        .push({
-          pathname: "/orderplaced",
-          query: { order_id: feedBack.id },
-        })
-        .then(() => router.reload());
-    }
-    if (error) {
-      if (error.type === "card_error" || error.type === "validation_error") {
-        setMessage(error.message as string);
-      } else {
-        setMessage("An unexpected error occurred.");
-      }
-    }
 
-    setIsLoading(false);
+    const data = await res.json();
+    if (data.result.length > 0) {
+      const productsIsShort = data.result.reduce(
+        (accu: { [key: number]: number }, curr: Product) => {
+          return { ...accu, [curr.id]: curr.quantity };
+        },
+        {}
+      );
+
+      router.push({
+        pathname: "/bag",
+        query: productsIsShort,
+      });
+    } else {
+      const { paymentIntent, error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          // Make sure to change this to your payment completion page
+          return_url: `http://localhost:3000/bag`,
+          receipt_email: userData.email,
+        },
+        redirect: "if_required",
+      });
+      if (paymentIntent?.status === "succeeded") {
+        const res = await fetch("/api/createOrder", {
+          method: "POST",
+          body: JSON.stringify({
+            amount,
+            deliveryInfo: tempUserInfo,
+            billingInfo: showBillingAddress ? billingAddress : tempUserInfo,
+            shoppingBag,
+            productData,
+          }),
+        });
+        const feedBack = await res.json();
+        if (feedBack.user_id === null) {
+          console.log(feedBack);
+          localStorage.removeItem("bag");
+        }
+        router
+          .push({
+            pathname: "/orderplaced",
+            query: { order_id: feedBack.id },
+          })
+          .then(() => router.reload());
+      }
+      if (error) {
+        if (error.type === "card_error" || error.type === "validation_error") {
+          setMessage(error.message as string);
+        } else {
+          setMessage("An unexpected error occurred.");
+        }
+      }
+
+      setIsLoading(false);
+    }
   };
   return (
     <StyledForm>

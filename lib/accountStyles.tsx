@@ -12,18 +12,32 @@ export const StyledLogInPage = styled.div`
   .content {
     margin: 30px auto;
     display: flex;
+    @media screen and (max-width: 600px) {
+      flex-direction: column;
+    }
     justify-content: center;
     gap: 10vw;
-    width: 100%;
-    form {
-      width: 20%;
+    width: 70%;
+    * {
+      flex: 1;
     }
-    label {
-      margin-top: 10px;
-    }
-    .warning {
-      color: red;
-      font-size: var(--tiny-text);
+    .log-in {
+      label {
+        margin-top: 10px;
+      }
+      .warning {
+        color: red;
+        font-size: var(--tiny-text);
+      }
+      button {
+        margin: 10px 0;
+      }
+      .forget-password {
+        background-color: white;
+        padding: 0;
+        text-decoration: underline;
+        color: var(--background-grey);
+      }
     }
   }
   .link {
@@ -144,5 +158,13 @@ export const StyledAccountPage = styled.div`
   .warning {
     color: red;
     font-size: var(--small-text);
+  }
+  .notMatchWarning {
+    display: none;
+  }
+  .notMatchWarning.open {
+    display: block;
+    color: red;
+    font-size: var(--tiny-text);
   }
 `;

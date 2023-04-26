@@ -123,7 +123,6 @@ model refresh_tokens {
   @@index([instance_id, user_id])
   @@index([parent])
   @@index([session_id, revoked])
-  @@index([token])
   @@schema("auth")
 }
 
@@ -255,7 +254,7 @@ model cart {
   quantity   Int
   product_id Int
   user_id    String?  @db.Uuid
-  products   products @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  products   products @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   profiles   users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@schema("public")
@@ -289,37 +288,40 @@ model flow_state {
   provider_refresh_token String?
   created_at             DateTime?             @db.Timestamptz(6)
   updated_at             DateTime?             @db.Timestamptz(6)
+  authentication_method  String
 
   @@index([auth_code], map: "idx_auth_code")
+  @@index([user_id, authentication_method], map: "idx_user_id_auth_method")
   @@schema("auth")
 }
 
 model orders {
-  id                   Int           @id @default(autoincrement())
-  user_id              String?       @db.Uuid
-  delivery_first_name  String        @db.VarChar(255)
-  delivery_last_name   String        @db.VarChar(255)
-  delivery_phone_num   String        @db.VarChar(255)
-  delivery_address_1   String        @db.VarChar(255)
-  delivery_address_2   String        @db.VarChar(255)
-  delivery_city        String        @db.VarChar(255)
-  delivery_country     String        @db.VarChar(255)
-  delivery_postal_code String        @db.VarChar(255)
-  billing_first_name   String        @db.VarChar(255)
-  billing_last_name    String        @db.VarChar(255)
-  billing_phone_num    String        @db.VarChar(255)
-  billing_address_1    String        @db.VarChar(255)
-  billing_address_2    String        @db.VarChar(255)
-  billing_city         String        @db.VarChar(255)
-  billing_country      String        @db.VarChar(255)
-  billing_postal_code  String        @db.VarChar(255)
+  id                   Int               @id @default(autoincrement())
+  user_id              String?           @db.Uuid
+  delivery_first_name  String            @db.VarChar(255)
+  delivery_last_name   String            @db.VarChar(255)
+  delivery_phone_num   String            @db.VarChar(255)
+  delivery_address_1   String            @db.VarChar(255)
+  delivery_address_2   String            @db.VarChar(255)
+  delivery_city        String            @db.VarChar(255)
+  delivery_country     String            @db.VarChar(255)
+  delivery_postal_code String            @db.VarChar(255)
+  billing_first_name   String            @db.VarChar(255)
+  billing_last_name    String            @db.VarChar(255)
+  billing_phone_num    String            @db.VarChar(255)
+  billing_address_1    String            @db.VarChar(255)
+  billing_address_2    String            @db.VarChar(255)
+  billing_city         String            @db.VarChar(255)
+  billing_country      String            @db.VarChar(255)
+  billing_postal_code  String            @db.VarChar(255)
   amount               Int
-  create_at            DateTime?     @default(now()) @db.Timestamptz(6)
-  order_status         order_status?
+  create_at            DateTime?         @default(now()) @db.Timestamptz(6)
   delivery_email       String
   billing_email        String
+  order_status         order_status_enum
+  tracking_number      String?
   order_items          order_items[]
-  profiles             profiles?     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  profiles             profiles?         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("public")
 }
@@ -370,6 +372,15 @@ enum order_status {
   dispatched
   delivered
   placed
+
+  @@schema("public")
+}
+
+enum order_status_enum {
+  placed
+  dispatched
+  delivering
+  delivered
 
   @@schema("public")
 }

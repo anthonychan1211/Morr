@@ -34,6 +34,7 @@ const Header = ({
 
   useEffect(() => {
     if (userData.id === "" && shoppingBag.length > 0) {
+      setLoading(true);
       setBag(shoppingBag);
       setBagLength(
         shoppingBag.reduce((a, b) => {
@@ -45,15 +46,17 @@ const Header = ({
         setProductData(res);
       });
       setLoading(false);
-    } else {
+    } else if (userData.id !== "") {
       setUserShoppingBag(userData, setBagLength, setBag, setProductData);
     }
     setLoading(false);
   }, [shoppingBag, userData]);
+
   useEffect(() => {
     if (bag.length > 0) {
       setTotalAmount(getTotalAmount(productData, bag));
     }
+    setLoading(false);
   }, [bag, productData]);
   useEffect(() => {
     showBag

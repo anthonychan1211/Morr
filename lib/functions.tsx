@@ -5,8 +5,6 @@ import {
   FilterSelected,
   Product,
   SetBag,
-  SetBagItem,
-  SetStateBoolean,
   SetStateDocumentObject,
   SetStateNumber,
   SetStateStringArray,
@@ -127,7 +125,7 @@ export async function getUserBag(id: string) {
   return result.data;
 }
 
-/**Adding a list of new products to Cart table
+/**Updating a list of products of Bag table
  * @param {CartItem[]} newItem
  */
 export async function addToUserBag(newItem: CartItem[]) {
@@ -252,7 +250,67 @@ export async function handleAddProduct(
   }
 
   if (productData.filter((el) => el.id === data.id).length === 0) {
-    console.log("run");
+    setProductData([...productData, data]);
+  }
+}
+export async function handleDeleteProduct(
+  userData: UserDataType,
+  shoppingBag: CartItem[],
+  data: Product,
+  setShoppingBag: SetBag,
+  productData: Product[],
+  setProductData: (productData: Product[]) => void
+) {
+  if (userData.id !== "") {
+    const productInBag = shoppingBag.filter(
+      (productInBag) => productInBag.product_id === data.id
+    );
+
+    const newItem: CartItem[] = productInBag.length
+      ? [
+          {
+            id: productInBag[0].id,
+            user_id: userData.id,
+            product_id: data.id,
+            quantity: productInBag[0].quantity - 1,
+          },
+        ]
+      : [
+          {
+            user_id: userData.id,
+            product_id: data.id,
+            quantity: 1,
+          },
+        ];
+    const message = await addToUserBag(newItem);
+    if (message) {
+      const newBag = await getUserBag(userData.id);
+      setShoppingBag(newBag);
+    }
+  } else {
+    const currentBag = JSON.parse(localStorage.getItem("bag") as string) || {};
+
+    localStorage.setItem(
+      "bag",
+      JSON.stringify({
+        ...currentBag,
+        [data.id]: currentBag[data.id] + 1 || 1,
+      })
+    );
+
+    const newBag = JSON.parse(localStorage.getItem("bag") as string) || {};
+    const updateBag = [];
+    for (const item in newBag) {
+      updateBag.push({
+        user_id: "",
+        product_id: parseInt(item),
+        quantity: parseInt(newBag[item]),
+      });
+    }
+    setShoppingBag(updateBag);
+  }
+
+  if (productData.filter((el) => el.id === data.id).length === 0) {
     setProductData([...productData, data]);
   }
 }
@@ -264,20 +322,23 @@ export async function handleQuantityChange(
   userData: UserDataType,
   setShoppingBag: SetBag
 ) {
-  let newShoppingBag = shoppingBag.map((item: CartItem) => {
-    if (item.product_id === clickeditem.product_id) {
-      if (change === "more") {
-        return { ...item, quantity: item.quantity + 1 };
-      } else if (change === "less") {
-        return { ...item, quantity: item.quantity - 1 };
+  if (userData.id !== "") {
+    let newShoppingBag = shoppingBag.map((item: CartItem) => {
+      if (item.product_id === clickeditem.product_id) {
+        if (change === "more") {
+          return { ...item, quantity: item.quantity + 1 };
+        } else if (change === "less") {
+          return { ...item, quantity: item.quantity - 1 };
+        }
       }
+      return item;
+    });
+    const message = await addToUserBag(newShoppingBag);
+    if (message) {
+      const newBag = await getUserBag(userData.id);
+      setShoppingBag(newBag);
     }
-    return item;
-  });
-  const message = await addToUserBag(newShoppingBag);
-  if (message) {
-    const newBag = await getUserBag(userData.id);
-    setShoppingBag(newBag);
+  } else {
   }
 }
 
@@ -310,4 +371,12 @@ export async function handleUpdateUser(
     alert("User Information has been updated!");
     setLoading(false);
   }
+}
+export async function getOrder(userID: string) {
+  const res = await fetch("/api/getOrder", {
+    method: "POST",
+    body: JSON.stringify(userID),
+  });
+  const result = await res.json();
+  return result;
 }

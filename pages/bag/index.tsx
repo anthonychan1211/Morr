@@ -1,7 +1,9 @@
 import {
+  addToUserBag,
   getBagProductData,
   getTotalAmount,
   getUserBag,
+  handleAddProduct,
   handleQuantityChange,
 } from "@/lib/functions";
 import { CartItem, Product, SetBag, UserDataType } from "@/lib/types";
@@ -11,6 +13,7 @@ import { Montserrat } from "@next/font/google";
 import { Context } from "@/lib/context";
 import Link from "next/link";
 import { StyledBagPage } from "@/lib/bagStyles";
+import { useRouter } from "next/router";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -26,9 +29,47 @@ const Bag = ({
   shoppingBag: CartItem[];
   setShoppingBag: SetBag;
 }) => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
   const { setLoading } = useContext(Context);
+  const router = useRouter();
+  useEffect(() => {
+    if (Object.keys(router.query).length > 0) {
+      let newShoppingBag = shoppingBag;
+      for (let i = 0; i < shoppingBag.length; i++) {
+        const item = newShoppingBag[i];
+        const productId = item.product_id;
+
+        const newQuantity = router.query[productId] as string;
+        if (newQuantity !== undefined) {
+          item.quantity = parseInt(newQuantity);
+          if (userData.id == "") {
+            let localItem = localStorage.getItem("bag");
+            if (localItem !== null) {
+              localStorage.setItem(
+                "bag",
+                JSON.stringify({
+                  ...JSON.parse(localItem),
+                  [productId]: parseInt(newQuantity),
+                })
+              );
+            }
+          } else {
+            setLoading(true);
+            const result = addToUserBag(newShoppingBag);
+          }
+        }
+      }
+
+      setShoppingBag(newShoppingBag);
+      router.reload();
+      alert(
+        "Some of the product is running short while your shopping. Please check the item quantity of your shopping bag. Sorry for the inconvinience."
+      );
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   useEffect(() => {
     async function getProductDetail() {
       setLoading(true);
@@ -38,8 +79,8 @@ const Bag = ({
       setLoading(false);
     }
     getProductDetail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shoppingBag]);
-
   async function handleRemove(item: CartItem) {
     setLoading(true);
     const removeItem = shoppingBag.filter(
@@ -80,6 +121,7 @@ const Bag = ({
           const bagItem = shoppingBag.filter(
             (el) => el.product_id === product.id
           )[0];
+
           return (
             <div className="single-item" key={product.id}>
               <div className="photo">
@@ -119,20 +161,23 @@ const Bag = ({
                       -
                     </button>
                     <span className="number">{bagItem?.quantity}</span>
-                    <button
-                      className="control-button"
-                      onClick={() =>
-                        handleQuantityChange(
-                          "more",
-                          bagItem,
-                          shoppingBag,
-                          userData,
-                          setShoppingBag
-                        )
-                      }
-                    >
-                      +
-                    </button>
+                    {bagItem?.quantity < product.quantity! && (
+                      <button
+                        className="control-button"
+                        onClick={() => {
+                          handleAddProduct(
+                            userData,
+                            shoppingBag,
+                            product,
+                            setShoppingBag,
+                            products,
+                            setProducts
+                          );
+                        }}
+                      >
+                        +
+                      </button>
+                    )}
                   </div>
                 </div>
                 <button

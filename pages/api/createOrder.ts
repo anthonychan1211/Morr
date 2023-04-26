@@ -58,6 +58,12 @@ export default async function handler(
           },
         });
       }
+      for (const item of shoppingBag) {
+        await prisma.products.update({
+          where: { id: item.product_id },
+          data: { quantity: { decrement: item.quantity } },
+        });
+      }
       res.json(order);
     }
   } catch (err) {
