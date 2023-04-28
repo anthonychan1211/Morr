@@ -20,6 +20,7 @@ const Location = () => {
 
   if (
     routeElement.includes("Products") ||
+    routeElement.includes("Orders") ||
     (routeElement.includes("Bag") && !routeElement.includes("Checkout"))
   ) {
     return (

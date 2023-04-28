@@ -88,8 +88,6 @@ const Orderplaced = ({
   order_items: OrderItemType[];
   items_data: Product[];
 }) => {
-  console.log(order_items);
-  console.log(items_data);
   return (
     <StyledOrderdPlaced>
       <h1 className="big-title">Thank you for your purchase!</h1>

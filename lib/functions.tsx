@@ -315,8 +315,8 @@ export async function handleDeleteProduct(
   }
 }
 
-export async function handleQuantityChange(
-  change: string,
+export async function handleSubtractQuantity(
+  data: Product,
   clickeditem: CartItem,
   shoppingBag: CartItem[],
   userData: UserDataType,
@@ -325,9 +325,7 @@ export async function handleQuantityChange(
   if (userData.id !== "") {
     let newShoppingBag = shoppingBag.map((item: CartItem) => {
       if (item.product_id === clickeditem.product_id) {
-        if (change === "more") {
-          return { ...item, quantity: item.quantity + 1 };
-        } else if (change === "less") {
+        if (item.quantity > 1) {
           return { ...item, quantity: item.quantity - 1 };
         }
       }
@@ -339,6 +337,26 @@ export async function handleQuantityChange(
       setShoppingBag(newBag);
     }
   } else {
+    const currentBag = JSON.parse(localStorage.getItem("bag") as string) || {};
+
+    localStorage.setItem(
+      "bag",
+      JSON.stringify({
+        ...currentBag,
+        [data.id]: currentBag[data.id] - 1 || 1,
+      })
+    );
+
+    const newBag = JSON.parse(localStorage.getItem("bag") as string) || {};
+    const updateBag = [];
+    for (const item in newBag) {
+      updateBag.push({
+        user_id: "",
+        product_id: parseInt(item),
+        quantity: parseInt(newBag[item]),
+      });
+    }
+    setShoppingBag(updateBag);
   }
 }
 
@@ -366,17 +384,9 @@ export async function handleUpdateUser(
     body: JSON.stringify(userInfo),
   });
   const data = await res.json();
-  console.log(data);
+
   if (data) {
     alert("User Information has been updated!");
     setLoading(false);
   }
-}
-export async function getOrder(userID: string) {
-  const res = await fetch("/api/getOrder", {
-    method: "POST",
-    body: JSON.stringify(userID),
-  });
-  const result = await res.json();
-  return result;
 }

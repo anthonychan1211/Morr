@@ -1,11 +1,14 @@
 import { CartItem, Product } from "@/lib/types";
 import { prisma } from "@/prisma/db";
 import { NextApiRequest, NextApiResponse } from "next";
-
+import sgMail from "@sendgrid/mail";
+import { CompletionTriggerKind } from "typescript";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const sgApiKey = process.env.SENDGRID_API_KEY;
+  sgMail.setApiKey(sgApiKey!);
   const { amount, deliveryInfo, billingInfo, shoppingBag, productData } =
     JSON.parse(req.body);
   try {
@@ -64,6 +67,93 @@ export default async function handler(
           data: { quantity: { decrement: item.quantity } },
         });
       }
+      console.log(order.delivery_email, order.billing_email);
+      await sgMail.send({
+        to:
+          order.delivery_email === order.billing_email
+            ? order.delivery_email
+            : [order.delivery_email, order.billing_email],
+        from: `Anthony Chan <${process.env.SENDER_EMAIL}>`,
+        subject: `Order No.${order.id} is placed`,
+        html: `<div
+        style="
+          width: 90%;
+          min-width: 330px;
+          max-width: 800px;
+          margin: 0 auto;
+          border: 1px solid black;
+          background: #2e2e2e;
+          color: #dddddd;
+        "
+      >
+        <img
+          style="
+            display: block;
+            width: 110px;
+            height: auto;
+            margin: 20px auto;
+            text-align: center;
+          "
+          alt="logo"
+          src="https://res.cloudinary.com/doeejabc9/image/upload/v1676587183/morr/cle7opxol0000zin05ey62ix2.png"
+        ></img>
+
+        <h3 style="text-align: center; margin: 20px auto; color: #dddddd;">
+          Thank you for your purchase!
+        </h3>
+        <p
+          style="text-align: center; margin: 20px auto; font-size: 14px; color: #dddddd;"
+        >
+          Order ID : ${order.id}
+        </p>
+        <div style="margin: 10px auto; width: 330px;">
+        ${shoppingBag.map((el: CartItem, i: number) => {
+          const itemData = productData.find(
+            (product: Product) => product.id === el.product_id
+          );
+          return ` <div
+            key={i}
+            style="display: flex; gap: 10px; margin: 10px auto"
+          >
+            <div
+              style="
+                width: 100px;
+                height: 100px;
+                position: relative;
+              "
+            >
+              <img
+                style="
+                  object-fit: cover;
+                  position: absolute;
+                  width: 100%;
+                  height: 100%;
+                "
+                src='${itemData?.cover_photo}'
+              />
+            </div>
+            <div>
+              <p style="font-size: 12px; color: #dddddd; margin-left: 10px">${itemData?.name}</p>
+              <p style="font-size: 12px; color: #dddddd; margin-left: 10px">Quantity: ${el.quantity}</p>
+            </div>
+          </div>`;
+        })}
+
+          <p style="font-size: 12px; margin: 20px 0px; color: #dddddd;">
+            We will send an email once we have your order dispatched. If you
+            want to track your order, you may go to your
+            <a
+              href="https://morr.vercel.app/orders"
+              style="color: #b8a0a0"
+            >
+              account orders page
+            </a>
+            to check the tracking number.
+          </p>
+        </div>
+      </div>
+        `,
+      });
       res.json(order);
     }
   } catch (err) {

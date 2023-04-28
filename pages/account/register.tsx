@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabaseClient";
 import { StyledRegisterForm } from "../../lib/accountStyles";
@@ -7,11 +7,13 @@ import CountrySelector from "@/components/Body/CountrySelector";
 import { UserDataType } from "@/lib/types";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/high-res.css";
+import { Context } from "@/lib/context";
 const ptSansNarrow = PT_Sans_Narrow({
   weight: ["700"],
   subsets: ["latin"],
 });
 export default function Register() {
+  const { setLoading } = useContext(Context);
   const [userInfo, setUserInfo] = useState<UserDataType>({
     role: "",
     id: "",
@@ -34,6 +36,7 @@ export default function Register() {
   const [notMatchWarning, setNotMatchWarning] = useState(false);
   const router = useRouter();
   const handleSubmit = async (e: { preventDefault: () => void }) => {
+    setLoading(true);
     e.preventDefault();
     if (password.length <= 8) {
       setLengthWarning(true);
@@ -63,6 +66,7 @@ export default function Register() {
 
     if (error) {
       alert(error.message);
+      setLoading(false);
     } else {
       const res = await fetch("/api/registerName", {
         method: "POST",
@@ -80,11 +84,12 @@ export default function Register() {
         }),
       });
       const result = await res.json();
-      console.log(result);
+
       alert(
         "Registration successful! Please check your email for confirmation."
       );
-      router.push("/account");
+      router.push("/");
+      setLoading(false);
     }
   };
 

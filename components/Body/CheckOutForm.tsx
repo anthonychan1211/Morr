@@ -176,7 +176,6 @@ export default function CheckoutForm({
         });
         const feedBack = await res.json();
         if (feedBack.user_id === null) {
-          console.log(feedBack);
           localStorage.removeItem("bag");
         }
         router

@@ -73,6 +73,11 @@ export const StyledBagPage = styled.div`
     height: 20px;
     cursor: pointer;
   }
+  .control-button[disabled] {
+    border: 1px solid #3f3f3f;
+    color: #3f3f3f;
+    pointer-events: none;
+  }
   .check-out {
     position: sticky;
     top: 40px;

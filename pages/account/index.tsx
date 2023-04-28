@@ -16,6 +16,7 @@ import { handleUpdateUser, handleUserInfoChange } from "@/lib/functions";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/high-res.css";
 import { Montserrat } from "@next/font/google";
+import { useRouter } from "next/router";
 const montserratThin = Montserrat({
   subsets: ["latin"],
   weight: ["300"],
@@ -25,6 +26,7 @@ const ptSansNarrow = PT_Sans_Narrow({
   subsets: ["latin"],
 });
 const Account = ({ userData }: { userData: UserDataType }) => {
+  const router = useRouter();
   const [loggedIn, setLoggedIn] = useState(false);
   const [logInWarning, setLogInWarning] = useState(false);
   const [resetPasswordWarning, setResetPasswordWarning] = useState(false);
@@ -60,7 +62,9 @@ const Account = ({ userData }: { userData: UserDataType }) => {
     setLogInWarning(false);
     const { data, error } = await supabase.auth.signInWithPassword(credential);
     if (data.user) {
-      window.location.reload();
+      setLoading(false);
+
+      router.reload();
     } else {
       setLogInWarning(true);
       console.log(error);
@@ -76,7 +80,7 @@ const Account = ({ userData }: { userData: UserDataType }) => {
   async function handleResetPassword(e: MouseEvent) {
     e.preventDefault();
     setLoading(true);
-    console.log(resetPasswordEmail);
+
     if (userData.email !== "" && resetPasswordEmail !== userData.email) {
       setResetPasswordWarning(true);
       return;

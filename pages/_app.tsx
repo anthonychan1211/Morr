@@ -1,6 +1,6 @@
 import Header from "../components/Header";
 import type { AppInitialProps, AppProps } from "next/app";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { createGlobalStyle } from "styled-components";
@@ -70,6 +70,7 @@ Router.events.on("routeChangeComplete", () => NProgress.done());
 Router.events.on("routeChangeError", () => NProgress.done());
 export default function MyApp({ Component, pageProps }: AppProps) {
   const { setLoading } = useContext(Context);
+  const router = useRouter();
   const [supabaseClient] = useState(() => createBrowserSupabaseClient());
   const [userData, setUserData] = useState<UserDataType>({
     role: "",
@@ -125,6 +126,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     async function setUpShoppingBag() {
       if (userData.id !== "") {
         const itemsInBag = await getUserBag(userData.id);
+
         const localBag = JSON.parse(localStorage.getItem("bag") as string);
         if (localBag !== null) {
           let mergedBag: CartItem[] = [];
@@ -148,9 +150,13 @@ export default function MyApp({ Component, pageProps }: AppProps) {
               mergedBag.push(newItem);
             }
           }
+          localStorage.removeItem("bag");
+
           const result = addToUserBag(mergedBag);
           result.then((data) => {
-            if (data) localStorage.removeItem("bag");
+            if (data) {
+              router.reload();
+            }
           });
         } else {
           setShoppingBag(itemsInBag);
@@ -171,6 +177,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       }
     }
     setUpShoppingBag();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData]);
   return (
     <LoadingProvider>

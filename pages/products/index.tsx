@@ -1,4 +1,4 @@
-import { Product, SingleObject } from "../../lib/types";
+import { Product } from "../../lib/types";
 
 import { StyledProductLandingPage } from "../../lib/productStyles";
 

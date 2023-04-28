@@ -4,7 +4,7 @@ import {
   getTotalAmount,
   getUserBag,
   handleAddProduct,
-  handleQuantityChange,
+  handleSubtractQuantity,
 } from "@/lib/functions";
 import { CartItem, Product, SetBag, UserDataType } from "@/lib/types";
 import React, { useContext, useEffect, useState } from "react";
@@ -147,10 +147,11 @@ const Bag = ({
                   <span className="tag">Quantity : </span>
                   <div className="quantity-control">
                     <button
+                      disabled={bagItem?.quantity === 1}
                       className="control-button"
                       onClick={() =>
-                        handleQuantityChange(
-                          "less",
+                        handleSubtractQuantity(
+                          product,
                           bagItem,
                           shoppingBag,
                           userData,
@@ -161,23 +162,22 @@ const Bag = ({
                       -
                     </button>
                     <span className="number">{bagItem?.quantity}</span>
-                    {bagItem?.quantity < product.quantity! && (
-                      <button
-                        className="control-button"
-                        onClick={() => {
-                          handleAddProduct(
-                            userData,
-                            shoppingBag,
-                            product,
-                            setShoppingBag,
-                            products,
-                            setProducts
-                          );
-                        }}
-                      >
-                        +
-                      </button>
-                    )}
+                    <button
+                      disabled={!(bagItem?.quantity < product.quantity!)}
+                      className="control-button"
+                      onClick={() => {
+                        handleAddProduct(
+                          userData,
+                          shoppingBag,
+                          product,
+                          setShoppingBag,
+                          products,
+                          setProducts
+                        );
+                      }}
+                    >
+                      +
+                    </button>
                   </div>
                 </div>
                 <button

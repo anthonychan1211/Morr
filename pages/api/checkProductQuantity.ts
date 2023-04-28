@@ -17,7 +17,7 @@ export default async function handler(
         id: { in: product_id },
       },
     });
-    console.log(product_id);
+
     const productLow = itemsInBag.filter((item) => {
       if (
         item.quantity! <
@@ -27,7 +27,7 @@ export default async function handler(
       }
       return false;
     });
-    console.log(productLow);
+
     res.json({ result: productLow });
   } catch (e) {
     console.error(e);
