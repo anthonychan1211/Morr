@@ -14,7 +14,7 @@ export default async function addToUserBag(
         id: order_id,
       },
       data: {
-        tracking_number,
+        tracking_number: tracking_number || null,
         order_status,
       },
     });
