@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const StyledOrderPage = styled.div`
   flex: 1;
   color: lightgrey;
-  padding-top: 50px;
+
   .current-order,
   .previous-order {
     width: 65%;
@@ -13,7 +13,10 @@ export const StyledOrderPage = styled.div`
     @media screen and (max-width: 600px) {
       width: 95%;
     }
-    margin: 20px auto;
+    margin: 50px auto;
+  }
+  .no-orders {
+    margin: 20px 0;
   }
   .single-order {
     margin: 30px 0;
@@ -48,6 +51,29 @@ export const StyledOrderPage = styled.div`
       width: 70%;
     }
   }
+  .photos-detail {
+    display: block;
+    width: 100%;
+    margin: 40px 0;
+    .single-item {
+      display: grid;
+      grid-template-columns: 105px auto;
+      gap: 10px;
+
+      .info {
+        margin: 20px 0;
+        display: flex;
+        justify-content: space-between;
+      }
+      .item-price {
+        font-size: var(--small-text);
+      }
+      .quantity {
+        font-size: var(--tiny-text);
+        margin: 8px 0;
+      }
+    }
+  }
   .thumbnail {
     position: relative;
     width: 100px;
@@ -80,18 +106,50 @@ export const StyledOrderPage = styled.div`
   .arrow {
     display: inline-block;
     margin-left: 15px;
+    opacity: 0;
+    transition: all 0.2s;
+  }
+  .arrow.show {
+    opacity: 1;
+  }
+  .arrow.upside-down {
+    opacity: 1;
+    transform: rotate(180deg);
   }
   .more-detail {
     font-size: 12px;
     display: flex;
     justify-content: space-between;
+    align-items: end;
+    .tracking-number {
+      margin-top: 10px;
+    }
+    p {
+      margin-top: 10px;
+    }
     button {
       padding: 0;
       margin: 0;
       font-size: 12px;
       :hover {
-        border-bottom: 1px solid lightgrey;
+        text-decoration: underline;
       }
+    }
+  }
+  .update-section {
+    width: 50%;
+    select,
+    input {
+      padding: 10px;
+      margin-bottom: 5px;
+    }
+    h4 {
+      margin: 40px 0 20px 0;
+    }
+    margin: 30px 0;
+    button {
+      margin-top: 20px;
+      background-color: #171717;
     }
   }
 `;

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { StyledOrderPage, StyledToLogInPage } from "../../lib/orderStyles";
 import { OrderItemType, OrderType, Product, UserDataType } from "@/lib/types";
-import Image from "next/image";
 import Link from "next/link";
 import { Montserrat } from "@next/font/google";
+import OrderCard from "@/components/Body/OrderCard";
 const montserratThin = Montserrat({
   subsets: ["latin"],
   weight: ["300"],
@@ -45,12 +45,13 @@ const Order = ({ userData }: { userData: UserDataType }) => {
         setProductInfo(result.productsInfo);
       }
     }
-    if (userData.id !== "") {
+    if (userData.role === "admin") {
+      getOrder("admin");
+    } else if (userData.id !== "") {
       getOrder(userData.id);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+  }, [userData]);
+  console.log(previousOrders);
   return userData.id === "" ? (
     <StyledToLogInPage className={montserratNormal.className}>
       <div className="container">
@@ -67,100 +68,17 @@ const Order = ({ userData }: { userData: UserDataType }) => {
         ) : (
           <div className={`container ${montserratThin.className}`}>
             {ongoingOrders.map((ongoingOrder: OrderType, i) => {
-              const orderPlacedDate = new Date(ongoingOrder.create_at);
+              const orderItems = orderProducts.filter(
+                (el) => el.order_id === ongoingOrder.id
+              );
               return (
-                <div key={i} className="single-order">
-                  <div className="order-info">
-                    <div className="cell">
-                      <p>Order No.:</p>
-                      <p>{ongoingOrder.id}</p>
-                    </div>
-                    <div className="cell">
-                      <p>Order Placed at:</p>
-                      <p>
-                        {`${orderPlacedDate.getFullYear()}-${orderPlacedDate.getMonth()}-${orderPlacedDate.getDate()}`}
-                      </p>
-                    </div>
-
-                    <div className="cell">
-                      <p>Total Amount</p>
-                      <p>£{ongoingOrder.amount / 100}</p>
-                    </div>
-                    <div className="delivery-section cell">
-                      <p className="name">Deliver To:</p>
-                      <div>
-                        {ongoingOrder.delivery_first_name}
-                        <Image
-                          className="arrow"
-                          src="/arrow-down.png"
-                          alt="arrow"
-                          width={8}
-                          height={8}
-                        />
-                      </div>
-                      <div className="delivery-address">
-                        <p>
-                          {ongoingOrder.delivery_address_1},<br />
-                          {ongoingOrder.delivery_address_2 !== "" &&
-                            `${ongoingOrder.delivery_address_2},`}
-                          {ongoingOrder.delivery_city},<br />
-                          {ongoingOrder.delivery_country},<br />
-                          {ongoingOrder.delivery_postal_code}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="photos">
-                    {orderProducts
-                      .filter((el) => el.order_id === ongoingOrder.id)
-                      .map((product, i) => {
-                        return (
-                          <div key={i} className="thumbnail">
-                            <Image
-                              fill
-                              alt="photo"
-                              src={
-                                productInfo.find(
-                                  (el) => product.product_id === el.id
-                                )?.cover_photo || ""
-                              }
-                            />
-                          </div>
-                        );
-                      })}
-                  </div>
-                  <div className="more-detail">
-                    {ongoingOrder.tracking_number !== null ? (
-                      <p>Tracking Number: {ongoingOrder.tracking_number}</p>
-                    ) : (
-                      <p>
-                        Order Status:
-                        {ongoingOrder.order_status[0].toUpperCase() +
-                          ongoingOrder.order_status.slice(1)}
-                      </p>
-                    )}
-
-                    <button
-                      type="button"
-                      className={`detail-toggle ${montserratThin.className}`}
-                      onClick={(e) => {
-                        (e.target as HTMLElement)
-                          .closest(".single-order")
-                          ?.classList.add("open");
-                      }}
-                    >
-                      <span className="shrink">Show Order Details</span>
-                      <span className="expand">Close Order Details</span>
-                      <Image
-                        className="arrow"
-                        src="/arrow-down.png"
-                        alt="arrow"
-                        width={8}
-                        height={8}
-                      />
-                    </button>
-                  </div>
-                </div>
+                <OrderCard
+                  key={i}
+                  productData={productInfo}
+                  order={ongoingOrder}
+                  orderItems={orderItems}
+                  userData={userData}
+                ></OrderCard>
               );
             })}
           </div>
@@ -169,34 +87,23 @@ const Order = ({ userData }: { userData: UserDataType }) => {
       <div className="previous-order">
         <h2 className={montserratNormal.className}>Previous Orders</h2>
         {previousOrders.length === 0 ? (
-          <p className={montserratThin.className}>No previous orders</p>
+          <p className={`no-orders ${montserratThin.className}`}>
+            No previous orders
+          </p>
         ) : (
           <div className={`container ${montserratThin.className}`}>
             {previousOrders.map((previousOrder: OrderType, i) => {
+              const orderItems = orderProducts.filter(
+                (el) => el.order_id === previousOrder.id
+              );
               return (
-                <div key={i} className="single-order">
-                  <p>Order Number: {previousOrder.id}</p>
-                  <div className="thumbnail">
-                    {orderProducts
-                      .filter((el) => el.order_id === previousOrder.id)
-                      .map((product, i) => {
-                        return (
-                          <Image
-                            key={i}
-                            height={50}
-                            width={50}
-                            alt="photo"
-                            src={
-                              productInfo.find(
-                                (el) => product.product_id === el.id
-                              )?.cover_photo || ""
-                            }
-                          />
-                        );
-                      })}
-                  </div>
-                  <p>Order Status: {previousOrder.order_status}</p>
-                </div>
+                <OrderCard
+                  key={i}
+                  productData={productInfo}
+                  order={previousOrder}
+                  orderItems={orderItems}
+                  userData={userData}
+                ></OrderCard>
               );
             })}
           </div>

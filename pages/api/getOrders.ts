@@ -9,11 +9,14 @@ export default async function handler(
   const { user_id } = JSON.parse(req.body);
 
   try {
-    const orders = await prisma.orders.findMany({
-      where: {
-        user_id,
-      },
-    });
+    const orders =
+      user_id === "admin"
+        ? await prisma.orders.findMany()
+        : await prisma.orders.findMany({
+            where: {
+              user_id,
+            },
+          });
 
     const items = await prisma.order_items.findMany({
       where: {
