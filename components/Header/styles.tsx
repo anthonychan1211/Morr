@@ -2,13 +2,37 @@ import styled from "styled-components";
 
 export const StyledHeader = styled.div`
   text-align: center;
-  padding-top: 2.5vw;
   width: 100%;
   margin: 0px auto;
   border-bottom: 2px solid #292929;
+  .banner {
+    width: 100%;
+    background-color: #8e8c7d;
+    color: #e4e4e4;
+    font-size: var(--small-text);
+    text-align: center;
+    height: auto;
+    margin: 0;
+    padding: 5px;
+    overflow: hidden;
+    .cross {
+      position: absolute;
+      right: 1vw;
+      cursor: pointer;
+    }
+    transition: all 0.5s;
+  }
+  .banner.close {
+    height: 0;
+    padding: 0px;
+    .cross {
+      display: none;
+    }
+  }
   .top-section {
+    padding-top: 2.5vw;
     margin-bottom: 10px;
-    height: 80px;
+    height: 120px;
     @media screen and (max-width: 700px) {
       height: 60px;
     }

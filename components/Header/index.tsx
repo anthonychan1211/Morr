@@ -28,6 +28,7 @@ const Header = ({
   const [bag, setBag] = useState<CartItem[]>([]);
   const [showBag, setShowBag] = useState<boolean>(false);
   const [bagLength, setBagLength] = useState(0);
+  const [showBanner, setShowBanner] = useState(true);
   const [totalAmount, setTotalAmount] = useState(0);
   const [showMenu, setShowMenu] = useState(false);
   const { setLoading, productData, setProductData } = useContext(Context);
@@ -65,6 +66,12 @@ const Header = ({
   }, [showBag]);
   return (
     <StyledHeader className={montserrat.className}>
+      <div className={showBanner ? `banner` : `banner close`}>
+        Free Delivery in the UK{" "}
+        <span className="cross" onClick={() => setShowBanner(false)}>
+          &#10005;
+        </span>
+      </div>
       <div className="top-section">
         <Link href="/" className="logo-section">
           <div className="logo">

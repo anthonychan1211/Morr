@@ -33,6 +33,11 @@ const StyledHome = styled.div`
     text-align: center;
     padding: 20px;
     margin: 0;
+    overflow: hidden;
+    height: auto;
+  }
+  .banner.close {
+    height: 0;
   }
   .about-us-container {
     display: flex;
@@ -142,7 +147,7 @@ export default function Home() {
         muted
         autoPlay
       ></video>
-      <div className="banner">Free Delivery in the UK</div>
+
       <div
         ref={domRef}
         className={`about-us-container ${isVisible ? "is-visible" : ""}`}
