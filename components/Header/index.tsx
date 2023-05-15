@@ -14,10 +14,15 @@ import {
 import { Context } from "@/lib/context";
 import MenuIcon from "../Body/MenuIcon";
 
-const montserrat = Montserrat({
+const montserratThick = Montserrat({
   subsets: ["latin"],
   weight: ["600"],
 });
+const montserratThin = Montserrat({
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
 const Header = ({
   userData,
   shoppingBag,
@@ -58,14 +63,14 @@ const Header = ({
       setTotalAmount(getTotalAmount(productData, bag));
     }
     setLoading(false);
-  }, [bag, productData]);
+  }, [bag, productData, shoppingBag]);
   useEffect(() => {
     showBag
       ? (document.body.style.overflow = "hidden")
       : (document.body.style.overflow = "auto");
   }, [showBag]);
   return (
-    <StyledHeader className={montserrat.className}>
+    <StyledHeader className={montserratThick.className}>
       <div className={showBanner ? `banner` : `banner close`}>
         Free Delivery in the UK{" "}
         <span className="cross" onClick={() => setShowBanner(false)}>
@@ -97,8 +102,8 @@ const Header = ({
             alt="shopping_bag"
           />
         </button>
+        <MenuIcon showMenu={showMenu} setShowMenu={setShowMenu} />
       </div>
-      <MenuIcon showMenu={showMenu} setShowMenu={setShowMenu} />
       <nav className={`nav-bar ${showMenu ? "show" : ""}`}>
         <Link
           href="/"
@@ -161,10 +166,10 @@ const Header = ({
                   </div>
                   <div className="product_info">
                     <p>{el.name}</p>
-                    <p className="quantity">
+                    <p className={`quantity ${montserratThin.className}`}>
                       Quantity: {productInfo?.quantity}
                     </p>
-                    <p className="price">
+                    <p className={`price ${montserratThin.className}`}>
                       £ {((productInfo?.quantity * el.price) / 100).toFixed(2)}
                     </p>
                   </div>
@@ -175,10 +180,14 @@ const Header = ({
           <div className="bottom">
             <p>
               TOTAL :{" "}
-              <span className="price-number">£ {totalAmount.toFixed(2)}</span>
+              <span className={`price-number ${montserratThin.className}`}>
+                £ {totalAmount.toFixed(2)}
+              </span>
             </p>
             <Link href={"/bag"} onClick={() => setShowBag(false)}>
-              <button className="go-to-bag">View My Shopping Bag</button>
+              <button className={`go-to-bag ${montserratThin.className}`}>
+                View My Shopping Bag
+              </button>
             </Link>
           </div>
         </div>

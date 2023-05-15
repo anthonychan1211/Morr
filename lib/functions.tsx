@@ -5,6 +5,7 @@ import {
   FilterSelected,
   Product,
   SetBag,
+  SetStateBoolean,
   SetStateDocumentObject,
   SetStateNumber,
   SetStateStringArray,
@@ -252,6 +253,7 @@ export async function handleAddProduct(
   if (productData.filter((el) => el.id === data.id).length === 0) {
     setProductData([...productData, data]);
   }
+  return "added";
 }
 export async function handleDeleteProduct(
   userData: UserDataType,

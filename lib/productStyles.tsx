@@ -156,9 +156,18 @@ export const StyledProductDetail = styled.div`
       padding-top: 10px;
     }
   }
+  .added-product-container {
+    position: relative;
+    margin-top: 50px;
+    height: 100%;
+    transition: all 0.8s;
+    transform-style: preserve-3d;
+  }
+  .added-product-container.show {
+    rotate: x 0.5turn;
+  }
   .add-to-cart {
     width: 100%;
-    margin-top: 50px;
     background-color: #515151;
     cursor: pointer;
     :disabled {
@@ -170,6 +179,21 @@ export const StyledProductDetail = styled.div`
   .add-to-cart:hover:not(:disabled) {
     background-color: #6d6d6d;
     outline: lightgrey solid 2px;
+  }
+
+  .added-notification {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    background-color: #57754f;
+    font-size: var(--small-text);
+    display: grid;
+    align-content: center;
+    text-align: center;
+    overflow: hidden;
+    margin: auto;
+    rotate: x 0.5turn;
+    backface-visibility: hidden;
   }
 
   .detail-section {
@@ -190,6 +214,7 @@ export const StyledProductDetail = styled.div`
     font-size: 20px;
     margin: 0 15px 0 0;
     transition: all 0.2s;
+    font-family: monospace;
   }
   .detail-section.open .triangle {
     transform: rotate(90deg);

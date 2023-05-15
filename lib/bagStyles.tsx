@@ -2,14 +2,21 @@ import styled from "styled-components";
 
 export const StyledBagPage = styled.div`
   color: lightgrey;
-  display: grid;
+  display: flex;
   position: relative;
-  grid-template-columns: 2fr 1fr;
+  @media (width < 1000px) {
+    flex-direction: column-reverse;
+  }
   .product-section {
     border-right: 2px solid #3d3d3d;
+    flex: 1;
   }
   .page-title {
     margin: 50px;
+    @media (width < 1000px) {
+      margin: 20px;
+      font-size: var(--large-text);
+    }
   }
   .single-item {
     display: flex;
@@ -18,11 +25,30 @@ export const StyledBagPage = styled.div`
     border: 1px solid #505050;
     padding: 25px;
     box-shadow: 2px 5px 30px #212121;
+    @media (width < 1000px) {
+      flex-direction: column;
+      height: 600px;
+      padding: 40px;
+      padding-bottom: 20px;
+      margin: 20px;
+    }
+    @media (width < 600px) {
+      flex-direction: column;
+      height: 400px;
+      padding: 20px;
+      margin: 20px;
+    }
   }
   .photo {
     position: relative;
     width: 100%;
-    height: 250px;
+    height: 20vw;
+    @media (width < 1000px) {
+      min-height: 400px;
+    }
+    @media (width < 600px) {
+      min-height: 250px;
+    }
     grid-area: photo;
     flex: 1;
     img {
@@ -80,10 +106,16 @@ export const StyledBagPage = styled.div`
   }
   .check-out {
     position: sticky;
-    top: 40px;
+    top: 220px;
+    @media (width < 1000px) {
+      position: static;
+      padding-top: 20px;
+    }
     right: 0px;
     width: 100%;
     height: fit-content;
+    flex: 0;
+    min-width: 30vw;
   }
   .remove {
     position: absolute;
@@ -92,6 +124,9 @@ export const StyledBagPage = styled.div`
     right: 0px;
     padding: 0;
     border-bottom: 1px solid lightgrey;
+    @media (width < 1000px) {
+      bottom: 30px;
+    }
   }
   .link {
     text-decoration: none;

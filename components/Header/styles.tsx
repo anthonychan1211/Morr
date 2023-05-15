@@ -5,6 +5,10 @@ export const StyledHeader = styled.div`
   width: 100%;
   margin: 0px auto;
   border-bottom: 2px solid #292929;
+  position: sticky;
+  inset: 0;
+  z-index: 999;
+  background-color: var(--background-grey);
   .banner {
     width: 100%;
     background-color: #8e8c7d;
@@ -21,6 +25,7 @@ export const StyledHeader = styled.div`
       cursor: pointer;
     }
     transition: all 0.5s;
+    z-index: 99;
   }
   .banner.close {
     height: 0;
@@ -30,6 +35,7 @@ export const StyledHeader = styled.div`
     }
   }
   .top-section {
+    position: relative;
     padding-top: 2.5vw;
     margin-bottom: 10px;
     height: 120px;
@@ -39,6 +45,7 @@ export const StyledHeader = styled.div`
   }
   .user {
     position: absolute;
+
     right: 15vw;
     top: 3vw;
     cursor: pointer;
@@ -144,7 +151,7 @@ export const StyledHeader = styled.div`
       position: absolute;
       top: 100px;
       margin: 0;
-      z-index: 999;
+      z-index: 98;
     }
   }
   .nav-bar.show {
@@ -252,9 +259,6 @@ export const StyledCart = styled.div`
       }
       .quantity,
       .price {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-        font-weight: 300;
         font-size: var(--tiny-text);
         color: #949494;
         line-height: 1rem;
@@ -277,9 +281,6 @@ export const StyledCart = styled.div`
         font-size: var(--small-text);
       }
       span {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-        font-weight: 300;
         padding: 0px 2vw;
         font-size: var(--small-text);
       }

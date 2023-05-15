@@ -146,6 +146,7 @@ export default function Home() {
         loop
         muted
         autoPlay
+        playsInline
       ></video>
 
       <div

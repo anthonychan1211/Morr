@@ -94,8 +94,9 @@ const Bag = ({
       const feedBack = await res.json();
       if (feedBack) {
         const newBag = await getUserBag(userData.id);
-        setShoppingBag(newBag);
+        setShoppingBag([...newBag]);
         setLoading(false);
+        router.reload();
       }
     } else {
       const updatedBag = [
@@ -192,6 +193,7 @@ const Bag = ({
           );
         })}
       </div>
+
       <div className="check-out">
         <h2 className={`total ${montserrat.className}`}>
           TOTAL : <span>£ {total.toFixed(2)}</span>
